@@ -11,7 +11,7 @@ class ResponseHelpers
         $succeeded = $statusCode === 200;
         return response()->json([
             "data" => $data,
-            "status_code" => $statusCode,
+            "statusCode" => $statusCode,
             "message" => $message,
             "succeeded" => $succeeded
         ], $statusCode);

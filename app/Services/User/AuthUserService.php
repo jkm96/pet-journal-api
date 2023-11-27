@@ -30,7 +30,7 @@ class AuthUserService
             'password' => Hash::make($request['password']),
         ]);
 
-        return ResponseHelpers::ConvertToJsonResponseWrapper(new UserResource($user),"Registered successfully'", 201);
+        return ResponseHelpers::ConvertToJsonResponseWrapper(new UserResource($user),"Registered successfully'", 200);
     }
 
 
@@ -84,7 +84,8 @@ class AuthUserService
             $token = $user->createToken('authToken')->plainTextToken;
             $tokenResource = [
                 "token" => $token,
-                "user"=> new UserResource($user)
+                "user"=> new UserResource($user),
+                "permissions" => [900,901,902,903,904,905]//TODO get permissions from db
             ];
             return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource,"logged in successfully", 200);
         }
