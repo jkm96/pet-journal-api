@@ -6,8 +6,11 @@ use App\Exceptions\CustomException;
 use App\Http\Requests\UserVerificationRequest;
 use App\Http\Resources\TokenResource;
 use App\Http\Resources\UserResource;
+use App\Models\Permission;
 use App\Models\User;
 use App\Models\UserVerification;
+use App\Utils\Enums\PetJournalPermission;
+use App\Utils\Enums\SubscriptionStatus;
 use App\Utils\Helpers\ResponseHelpers;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -22,15 +25,28 @@ class AuthUserService
      * @param $request
      * @return JsonResponse
      */
-    public function registerUser($request)
+    public function registerUser($request): JsonResponse
     {
-        $user = User::create([
-            'username' => $request['username'],
-            'email' => $request['email'],
-            'password' => Hash::make($request['password']),
-        ]);
+        try {
+            $user = User::create([
+                'username' => $request['username'],
+                'email' => $request['email'],
+                'password' => Hash::make($request['password']),
+            ]);
 
-        return ResponseHelpers::ConvertToJsonResponseWrapper(new UserResource($user),"Registered successfully'", 200);
+            foreach (PetJournalPermission::cases() as $journalPermission) {
+                $userPermission = new Permission();
+                $userPermission->user_id = $user->id;
+                $userPermission->name = $journalPermission->name;
+                $userPermission->value = $journalPermission->value;
+                $userPermission->save();
+            }
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(new UserResource($user),"Registered successfully'", 200);
+
+        } catch (\Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during registration', 500);
+        }
     }
 
 
@@ -38,7 +54,7 @@ class AuthUserService
      * @param $verificationRequest
      * @return JsonResponse
      */
-    public function verifyUserEmail($verificationRequest)
+    public function verifyUserEmail($verificationRequest): JsonResponse
     {
         $userVerify = UserVerification::where('token', $verificationRequest->token)->first();
         $message = 'Email cannot be recognized';
@@ -72,7 +88,7 @@ class AuthUserService
      * @param $loginRequest
      * @return JsonResponse
      */
-    public function loginUser($loginRequest)
+    public function loginUser($loginRequest): JsonResponse
     {
         $credentials = filter_var($loginRequest['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
@@ -82,10 +98,10 @@ class AuthUserService
                 ->firstOrFail();
 
             $token = $user->createToken('authToken')->plainTextToken;
+            $user->permissions->all();
             $tokenResource = [
                 "token" => $token,
-                "user"=> new UserResource($user),
-                "permissions" => [900,901,902,903,904,905]//TODO get permissions from db
+                "user"=> new UserResource($user)
             ];
             return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource,"logged in successfully", 200);
         }

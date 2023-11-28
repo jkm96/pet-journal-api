@@ -10,7 +10,4 @@ enum PetJournalPermission:int
     case PermissionsUsersDelete = 903;
     case PermissionsUsersExport = 904;
     case PermissionsUsersSearch = 905;
-
-    // SuperAdmin
-//    case PermissionsAccessAll = 9998;
 }

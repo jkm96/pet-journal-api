@@ -22,6 +22,10 @@ class UserResource extends JsonResource
             return [Str::camel($key) => $value];
         });
 
-        return $transformedData->all();
+        return array_merge($transformedData->all(), [
+            'permissions' => $this->whenLoaded('permissions', function () {
+                return $this->permissions->pluck('value')->toArray();
+            }),
+        ]);
     }
 }

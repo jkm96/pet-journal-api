@@ -2,7 +2,7 @@
 
 namespace App\Services\Admin;
 
-use App\Constants\AppConstants;
+use App\Utils\Constants\AppConstants;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;

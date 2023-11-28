@@ -19,27 +19,40 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'username',
-        'full_name',
         'email',
-        'phone_number',
         'password',
     ];
 
     /**
-     * Get the bids for the buyer.
+     * Get the permissions for the user.
      */
-    public function bids()
+    public function permissions()
     {
-        return $this->hasMany(Bid::class);
+        return $this->hasMany(Permission::class);
     }
 
     /**
-     * Get the bids for the buyer.
+     * Get the subscription for the user.
      */
-    public function products()
+    public function user_subscription()
     {
-        //,'user_id','bid_id','id','id'
-        return $this->hasManyThrough(Product::class,Bid::class);
+        return $this->hasOne(UserSubscription::class);
+    }
+
+    /**
+     * Get the pets for the user.
+     */
+    public function pets()
+    {
+        return $this->hasMany(Pet::class);
+    }
+
+    /**
+     * Get the journal entries for the user.
+     */
+    public function journal_entries()
+    {
+        return $this->hasManyThrough(JournalEntry::class,Pet::class);
     }
 
     /**

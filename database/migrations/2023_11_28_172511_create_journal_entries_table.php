@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersTable extends Migration
+class CreateJournalEntriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,16 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('journal_entries', function (Blueprint $table) {
             $table->id();
-            $table->string('username');
-            $table->string('email')->unique();
+            $table->bigInteger('pet_id');
+            $table->string('title');
+            $table->string('event');
+            $table->longText('content');
             $table->string('profile_url')->default('blank.profile.picture.png');
-            $table->boolean('status')->default(0);
-            $table->timestamp('email_verified_at')->nullable();
-            $table->boolean('is_email_verified')->default(0);
-            $table->string('password');
-            $table->rememberToken();
+            $table->string('location')->nullable();
+            $table->string('mood')->nullable();
+            $table->string('keywords')->nullable();
             $table->timestamps();
         });
     }
@@ -34,6 +34,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('journal_entries');
     }
 }
