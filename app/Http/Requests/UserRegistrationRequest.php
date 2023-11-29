@@ -37,7 +37,7 @@ class UserRegistrationRequest extends FormRequest
     {
         throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
             $validator->errors(),
-            "Validation errors",
+            "Registration failed due to validation errors",
             422
         ));
     }
