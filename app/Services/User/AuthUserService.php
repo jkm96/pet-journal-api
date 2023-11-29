@@ -42,7 +42,7 @@ class AuthUserService
                 $userPermission->save();
             }
 
-            return ResponseHelpers::ConvertToJsonResponseWrapper(new UserResource($user),"Registered successfully'", 200);
+            return ResponseHelpers::ConvertToJsonResponseWrapper(new UserResource($user), "Registered successfully'", 200);
 
         } catch (\Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during registration', 500);
@@ -59,20 +59,20 @@ class AuthUserService
         $userVerify = UserVerification::where('token', $verificationRequest->token)->first();
         $message = 'Email cannot be recognized';
 
-        if (!is_null($userVerify)){
+        if (!is_null($userVerify)) {
             $user = $userVerify->user;
 
-            if (!$user->is_email_verified){
+            if (!$user->is_email_verified) {
                 $userVerify->user->is_email_verified = 1;
                 $userVerify->user->email_verified_at = Carbon::now();
                 $userVerify->user->save();
                 $message = "Email has been verified. You can now login";
-            }else{
+            } else {
                 $message = "Seems like your email is already verified. Kindly login";
             }
         }
 
-        return ResponseHelpers::ConvertToJsonResponseWrapper([],$message, 200);
+        return ResponseHelpers::ConvertToJsonResponseWrapper([], $message, 200);
     }
 
     /**
@@ -81,7 +81,7 @@ class AuthUserService
     public function getAllUsers()
     {
         $users = User::all();
-        return ResponseHelpers::ConvertToJsonResponseWrapper(UserResource::collection($users),"success", 200);
+        return ResponseHelpers::ConvertToJsonResponseWrapper(UserResource::collection($users), "success", 200);
     }
 
     /**
@@ -92,21 +92,24 @@ class AuthUserService
     {
         $credentials = filter_var($loginRequest['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        if(Auth::attempt(array($credentials=>$loginRequest['username'], 'password'=>$loginRequest['password']))){
+        if (Auth::attempt(array($credentials => $loginRequest['username'], 'password' => $loginRequest['password']))) {
             $user = User::where('email', $loginRequest['username'])
-                ->orWhere('username',$loginRequest['username'])
+                ->orWhere('username', $loginRequest['username'])
                 ->firstOrFail();
-
-            $token = $user->createToken('authToken')->plainTextToken;
+            //TODO check if existing tokens are valid and return them instead of creating a new one
+            $token = $user->createToken('auth-token-' . $user->username, ['*'], Carbon::now()->addHours(12))->plainTextToken;
+            $tokenDetails = $user->tokens()->latest()->first();
+            $tokenDetails->token = $token;
             $user->permissions->all();
             $tokenResource = [
-                "token" => $token,
-                "user"=> new UserResource($user)
+                "token" => new TokenResource($tokenDetails),
+                "user" => new UserResource($user)
             ];
-            return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource,"logged in successfully", 200);
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "logged in successfully", 200);
         }
 
-        return ResponseHelpers::ConvertToJsonResponseWrapper([],"Login information is invalid.", 401);
+        return ResponseHelpers::ConvertToJsonResponseWrapper([], "Login information is invalid.", 401);
     }
 
     /**
@@ -116,6 +119,6 @@ class AuthUserService
     {
         auth()->user()->tokens()->delete();
 
-        return ResponseHelpers::ConvertToJsonResponseWrapper([],"logged out successfully", 200);
+        return ResponseHelpers::ConvertToJsonResponseWrapper([], "logged out successfully", 200);
     }
 }

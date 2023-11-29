@@ -16,10 +16,11 @@ class TokenResource extends JsonResource
      */
     public function toArray($request)
     {
-        $transformedData = collect($this->resource)->mapWithKeys(function ($value, $key) {
-            return [Str::camel($key) => $value];
-        });
+        return [
+            "token" => $this->token,
+            "expiresAt" => $this->expires_at,
+            "createdAt" => $this->created_at,
+        ];
 
-        return $transformedData->all();
     }
 }
