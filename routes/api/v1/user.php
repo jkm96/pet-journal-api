@@ -19,5 +19,6 @@ Route::group(['prefix' => 'v1/pet', 'namespace' => 'api/v1', 'middleware' => 'ap
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('profiles', [PetController::class, 'getAllPetProfiles']);
         Route::post('create', [PetController::class, 'createPet']);
+        Route::put('edit/{petId}', [PetController::class, 'editPetProfile']);
     });
 });

@@ -2,6 +2,7 @@
 
 namespace App\Services\User;
 
+use App\Http\Requests\EditPetRequest;
 use App\Http\Resources\PetProfileResource;
 use App\Http\Resources\UserResource;
 use App\Models\Pet;
@@ -37,9 +38,17 @@ class PetService
                 }
             }
 
-            return ResponseHelpers::ConvertToJsonResponseWrapper(new PetProfileResource($pet),"Pet profile created successfully",200);
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                new PetProfileResource($pet),
+                "Pet profile created successfully",
+                200
+            );
         } catch (\Exception $e) {
-            return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during pet profile creation', 500);
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error during pet profile creation',
+                500
+            );
         }
     }
 
@@ -47,6 +56,43 @@ class PetService
     {
         $user = auth()->user();
         $petProfiles = $user->pets()->orderBy('created_at', 'desc')->get();
-        return ResponseHelpers::ConvertToJsonResponseWrapper(PetProfileResource::collection($petProfiles), "Success", 200);
+        return ResponseHelpers::ConvertToJsonResponseWrapper(
+            PetProfileResource::collection($petProfiles),
+            "Success",
+            200
+        );
     }
+
+    public function updatePetProfile($request, $petId): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            $pet = Pet::findOrFail($petId);
+
+            if ($user->id !== $pet->user_id) {
+                return ResponseHelpers::ConvertToJsonResponseWrapper([], 'Unauthorized to edit resource', 403);
+            }
+
+            $pet->name = $request['name'];
+            $pet->nickname = $request['nickname'];
+            $pet->species = $request['species'];
+            $pet->breed = $request['breed'];
+            $pet->description = $request['description'];
+            $pet->date_of_birth = $request['date_of_birth'];
+            $pet->update();
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                new PetProfileResource($pet),
+                "Pet profile updated successfully",
+                200
+            );
+        } catch (\Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error during pet profile update',
+                500
+            );
+        }
+    }
+
 }
