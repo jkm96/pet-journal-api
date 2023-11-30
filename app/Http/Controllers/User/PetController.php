@@ -27,4 +27,11 @@ class PetController extends Controller
     public function createPet(CreatePetRequest $createPetRequest){
         return $this->_petService->createPetProfile($createPetRequest->validated());
     }
+
+    /**
+     * @return JsonResponse
+     */
+    public function getAllPetProfiles(){
+        return $this->_petService->getPetProfiles();
+    }
 }

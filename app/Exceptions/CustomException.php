@@ -8,16 +8,19 @@ use Illuminate\Http\Request;
 
 class CustomException extends Exception
 {
-    private $status_code;
+    private $statusCode;
+    private $data;
 
     /**
+     * @param $data
      * @param $message
-     * @param $status_code
+     * @param $statusCode
      */
-    public function __construct($message, $status_code)
+    public function __construct($data,$message, $statusCode)
     {
         $this->message = $message;
-        $this->status_code = $status_code;
+        $this->statusCode = $statusCode;
+        $this->data = $data;
     }
 
     /**
@@ -27,8 +30,10 @@ class CustomException extends Exception
     public function render(Request $request): JsonResponse
     {
         return response()->json([
-            'success' => false,
-            'message'=> $this->message
-        ], $this->status_code);
+            'data' => $this->data,
+            'statusCode' => $this->statusCode,
+            'message' => $this->message,
+            'succeeded' => false
+        ], $this->statusCode);
     }
 }

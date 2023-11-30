@@ -17,7 +17,7 @@ class CreatePetsTable extends Migration
             $table->id();
             $table->bigInteger('user_id');
             $table->string('name');
-            $table->string('nick_name')->nullable();
+            $table->string('nickname')->nullable();
             $table->string('species');
             $table->string('breed');
             $table->text('description');

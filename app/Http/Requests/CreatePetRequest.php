@@ -25,11 +25,14 @@ class CreatePetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:2',
-            'nickname' => 'min:2',
-            'species' => 'required|min:2',
-            'breed' => 'min:2',
-            'description' => 'required|min:6',
+            'name' => 'required|string|min:2',
+            'nickname' => 'nullable|string|min:2',
+            'species' => 'required|string|min:2',
+            'breed' => 'nullable|string|min:2',
+            'description' => 'required|string|min:6',
+            'date_of_birth' => 'nullable|datetime',
+            'profile_url' => 'nullable|string',
+            'pet_traits' => 'nullable|array',
         ];
     }
 

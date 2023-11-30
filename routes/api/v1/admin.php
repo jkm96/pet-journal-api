@@ -3,11 +3,12 @@
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
+Route::group(['prefix' => 'v1/admin', 'namespace' => 'api/v1', 'middleware' => 'api'], function () {
+    Route::post('register', [AdminController::class, 'registerAdmin']);
+    Route::post('login', [AdminController::class, 'loginAdmin']);
 
-Route::post('/admin/register', [AdminController::class, 'registerAdmin'])->name('register');
-Route::post('/admin/login', [AdminController::class, 'loginAdmin'])->name('login');
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/admin/all', [AdminController::class, 'viewAllAdmins'])->name('all');
-    Route::post('/admin/logout', [AdminController::class, 'logoutAdmin'])->name('logout');
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('all', [AdminController::class, 'viewAllAdmins']);
+        Route::post('logout', [AdminController::class, 'logoutAdmin']);
+    });
 });

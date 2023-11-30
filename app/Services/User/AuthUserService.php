@@ -90,26 +90,30 @@ class AuthUserService
      */
     public function loginUser($loginRequest): JsonResponse
     {
-        $credentials = filter_var($loginRequest['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        try {
+            $credentials = filter_var($loginRequest['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        if (Auth::attempt(array($credentials => $loginRequest['username'], 'password' => $loginRequest['password']))) {
-            $user = User::where('email', $loginRequest['username'])
-                ->orWhere('username', $loginRequest['username'])
-                ->firstOrFail();
-            //TODO check if existing tokens are valid and return them instead of creating a new one
-            $token = $user->createToken('auth-token-' . $user->username, ['*'], Carbon::now()->addHours(12))->plainTextToken;
-            $tokenDetails = $user->tokens()->latest()->first();
-            $tokenDetails->token = $token;
-            $user->permissions->all();
-            $tokenResource = [
-                "token" => new TokenResource($tokenDetails),
-                "user" => new UserResource($user)
-            ];
+            if (Auth::attempt(array($credentials => $loginRequest['username'], 'password' => $loginRequest['password']))) {
+                $user = User::where('email', $loginRequest['username'])
+                    ->orWhere('username', $loginRequest['username'])
+                    ->firstOrFail();
+                //TODO check if existing tokens are valid and return them instead of creating a new one
+                $token = $user->createToken('auth-token-' . $user->username, ['*'], Carbon::now()->addHours(12))->plainTextToken;
+                $tokenDetails = $user->tokens()->latest()->first();
+                $tokenDetails->token = $token;
+                $user->permissions->all();
+                $tokenResource = [
+                    "token" => new TokenResource($tokenDetails),
+                    "user" => new UserResource($user)
+                ];
 
-            return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "logged in successfully", 200);
+                return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "logged in successfully", 200);
+            }
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper([], "Login information is invalid.", 401);
+        } catch (\Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during user login', 500);
         }
-
-        return ResponseHelpers::ConvertToJsonResponseWrapper([], "Login information is invalid.", 401);
     }
 
     /**

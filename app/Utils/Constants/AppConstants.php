@@ -15,4 +15,8 @@ class AppConstants
         'monthly' => 'MONTHLY'
     );
 
+    public static $PetTraitType = array(
+        'like' => 'LIKE',
+        'dislike' =>'DISLIKE'
+    );
 }
