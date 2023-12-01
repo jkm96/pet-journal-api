@@ -22,3 +22,11 @@ Route::group(['prefix' => 'v1/pet', 'namespace' => 'api/v1', 'middleware' => 'ap
         Route::put('edit/{petId}', [PetController::class, 'editPetProfile']);
     });
 });
+
+Route::group(['prefix' => 'v1/pet-trait', 'namespace' => 'api/v1', 'middleware' => 'api'], function () {
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('{petId}', [PetController::class, 'getPetTraitsByPetId']);
+        Route::post('{petId}/create', [PetController::class, 'createPetTrait']);
+        Route::put('{petId}/edit/{petTraitId}', [PetController::class, 'editPetTrait']);
+    });
+});

@@ -11,8 +11,8 @@ class PetTrait extends Model
 
     protected $fillable = [
         'pet_id',
-        'like',
-        'dislike'
+        'trait',
+        'type'
     ];
 
     /**
