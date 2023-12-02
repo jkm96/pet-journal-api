@@ -26,6 +26,7 @@ class PetController extends Controller
     /**
      * @param CreatePetRequest $createPetRequest
      * @return JsonResponse
+     * @throws \Throwable
      */
     public function createPet(CreatePetRequest $createPetRequest): JsonResponse
     {
@@ -51,7 +52,17 @@ class PetController extends Controller
     }
 
     /**
+     * @param $petId
+     * @return JsonResponse
+     */
+    public function deletePetProfile($petId): JsonResponse
+    {
+        return $this->_petService->removePet($petId);
+    }
+
+    /**
      * @param EditPetTraitRequest $editPetTraitRequest
+     * @param $petId
      * @param $petTraitId
      * @return JsonResponse
      */
@@ -78,5 +89,15 @@ class PetController extends Controller
     public function getPetTraitsByPetId($petId): JsonResponse
     {
         return $this->_petService->getPetTraitsByPetId($petId);
+    }
+
+    /**
+     * @param $petId
+     * @param $petTraitId
+     * @return JsonResponse
+     */
+    public function deletePetTrait($petId, $petTraitId): JsonResponse
+    {
+        return $this->_petService->removePetTrait($petId,$petTraitId);
     }
 }

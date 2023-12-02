@@ -10,6 +10,7 @@ use App\Models\Pet;
 use App\Models\PetTrait;
 use App\Models\User;
 use App\Utils\Helpers\ResponseHelpers;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 
 class PetService
@@ -17,6 +18,7 @@ class PetService
     /**
      * @param $petRequest
      * @return JsonResponse
+     * @throws \Throwable
      */
     public function createPetProfile($petRequest): JsonResponse
     {
@@ -132,7 +134,43 @@ class PetService
     }
 
     /**
+     * @param $petId
+     * @return JsonResponse
+     */
+    public function removePet($petId): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            $pet = $user->pets()->findOrFail($petId);
+            if ($user->getAuthIdentifier() !== $pet->user_id) {
+                return ResponseHelpers::ConvertToJsonResponseWrapper(
+                    [],
+                    'Unauthorized to edit resource',
+                    403
+                );
+            }
+            $pet->forceDelete();
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                $pet->name,
+                $pet->name.'s profile deleted successfully',
+                200
+            );
+
+        } catch (ModelNotFoundException $e) {
+            return $this->itemNotFoundError($e);
+        } catch (\Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error during pet trait deletion',
+                400
+            );
+        }
+    }
+
+    /**
      * @param $traitRequest
+     * @param $petId
      * @param $petTraitId
      * @return JsonResponse
      */
@@ -140,7 +178,7 @@ class PetService
     {
         try {
             $user = auth()->user();
-            $user->pets()->findOrFail($petId);
+            $pet = $user->pets()->findOrFail($petId);
             $petTrait = PetTrait::findOrFail($petTraitId);
 
             // Check if the authenticated user is the owner of the associated pet
@@ -149,6 +187,15 @@ class PetService
                     [],
                     'Unauthorized to edit resource',
                     403);
+            }
+
+            $existingTrait = $pet->pet_traits()->where('trait', $traitRequest['trait'])->first();
+            if ($existingTrait) {
+                return ResponseHelpers::ConvertToJsonResponseWrapper(
+                    $petTrait->trait,
+                    "Error: A similar pet trait already exists under this pet profile",
+                    400
+                );
             }
 
             $petTrait->trait = $traitRequest['trait'];
@@ -212,6 +259,15 @@ class PetService
                 );
             }
 
+            $existingTrait = $pet->pet_traits()->where('trait', $petTraitRequest['trait'])->first();
+            if ($existingTrait) {
+                return ResponseHelpers::ConvertToJsonResponseWrapper(
+                    $petTraitRequest['trait'],
+                    "Error: A similar pet trait already exists under this pet profile",
+                    400
+                );
+            }
+
             $petTrait = new PetTrait();
             $petTrait->pet_id = $petId;
             $petTrait->trait = $petTraitRequest['trait'];
@@ -230,6 +286,58 @@ class PetService
                 400
             );
         }
+    }
+
+    /**
+     * @param $petId
+     * @param $petTraitId
+     * @return JsonResponse
+     */
+    public function removePetTrait($petId, $petTraitId): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            $pet = $user->pets()->findOrFail($petId);
+            $petTrait = PetTrait::findOrFail($petTraitId);
+            if ($user->getAuthIdentifier() !== $petTrait->pet->user_id) {
+                return ResponseHelpers::ConvertToJsonResponseWrapper(
+                    [],
+                    'Unauthorized to edit resource',
+                    403);
+            }
+            $petTrait->forceDelete();
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                $petTrait->name,
+                'Pet trait deleted successfully',
+                200
+            );
+
+        } catch (ModelNotFoundException $e) {
+            return $this->itemNotFoundError($e);
+        } catch (\Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error during pet trait deletion',
+                400
+            );
+        }
+    }
+
+    /**
+     * @param ModelNotFoundException|\Exception $e
+     * @return JsonResponse
+     */
+    public function itemNotFoundError(ModelNotFoundException|\Exception $e): JsonResponse
+    {
+        $fullyQualifiedName = $e->getModel();
+        $className = class_basename($fullyQualifiedName);
+
+        return ResponseHelpers::ConvertToJsonResponseWrapper(
+            ['error' => $className . ' not found'],
+            $className . ' not found',
+            404
+        );
     }
 
 }
