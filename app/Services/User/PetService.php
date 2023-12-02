@@ -189,7 +189,7 @@ class PetService
                     403);
             }
 
-            $existingTrait = $pet->pet_traits()->where('trait', $traitRequest['trait'])->first();
+            $existingTrait = $pet->petTraits()->where('trait', $traitRequest['trait'])->first();
             if ($existingTrait) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     $petTrait->trait,
@@ -232,7 +232,7 @@ class PetService
             );
         }
 
-        $petTraits = $pet->pet_traits()->orderBy('created_at', 'desc')->get();
+        $petTraits = $pet->petTraits()->orderBy('created_at', 'desc')->get();
         return ResponseHelpers::ConvertToJsonResponseWrapper(
             PetTraitResource::collection($petTraits),
             'Success',
@@ -259,7 +259,7 @@ class PetService
                 );
             }
 
-            $existingTrait = $pet->pet_traits()->where('trait', $petTraitRequest['trait'])->first();
+            $existingTrait = $pet->petTraits()->where('trait', $petTraitRequest['trait'])->first();
             if ($existingTrait) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     $petTraitRequest['trait'],

@@ -23,7 +23,7 @@ class Pet extends Model
     /**
      * Get the pet traits for the pet - likes, dislikes.
      */
-    public function pet_traits()
+    public function petTraits()
     {
         return $this->hasMany(PetTrait::class);
     }
@@ -31,9 +31,9 @@ class Pet extends Model
     /**
      * Get the journal entries for the pet.
      */
-    public function journal_entries()
+    public function journalEntries()
     {
-        return $this->hasMany(JournalEntry::class);
+        return $this->belongsToMany(JournalEntry::class, 'pet_journal_entries');
     }
 
     /**

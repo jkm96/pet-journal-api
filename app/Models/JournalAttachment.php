@@ -18,7 +18,7 @@ class JournalAttachment extends Model
     /**
      * Get the JournalEntry that owns the JournalAttachment.
      */
-    public function journal_entry()
+    public function journalEntry()
     {
         return $this->belongsTo(JournalEntry::class);
     }

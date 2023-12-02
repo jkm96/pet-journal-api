@@ -20,9 +20,17 @@ class JournalEntry extends Model
     ];
 
     /**
+     * Get the pets associated with the journal entry.
+     */
+    public function pets()
+    {
+        return $this->belongsToMany(Pet::class, 'pet_journal_entries');
+    }
+
+    /**
      * Get the JournalAttachment for the JournalEntry.
      */
-    public function journal_attachments()
+    public function journalAttachments()
     {
         return $this->hasMany(JournalAttachment::class);
     }

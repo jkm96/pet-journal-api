@@ -50,7 +50,7 @@ class User extends Authenticatable
     /**
      * Get the journal entries for the user.
      */
-    public function journal_entries()
+    public function journalEntries()
     {
         return $this->hasManyThrough(JournalEntry::class,Pet::class);
     }

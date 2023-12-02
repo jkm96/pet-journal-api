@@ -12,7 +12,7 @@ class UserSubscription extends Model
     /**
      * Get the SubscriptionPlan associated with the UserSubscription.
      */
-    public function subscription_plan()
+    public function subscriptionPlan()
     {
         return $this->hasOne(SubscriptionPlan::class);
     }
