@@ -10,13 +10,13 @@ class JournalEntry extends Model
     use HasFactory;
 
     protected $fillable = [
-        'pet_id',
         'title',
         'event',
         'content',
         'location',
         'mood',
-        'keywords',
+        'tags',
+        'profile_url',
     ];
 
     /**
@@ -24,7 +24,7 @@ class JournalEntry extends Model
      */
     public function pets()
     {
-        return $this->belongsToMany(Pet::class, 'pet_journal_entries');
+        return $this->belongsToMany(Pet::class, 'pet_journal_entries', 'journal_entry_id', 'pet_id');
     }
 
     /**

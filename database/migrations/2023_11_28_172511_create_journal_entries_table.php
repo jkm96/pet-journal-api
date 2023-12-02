@@ -15,14 +15,14 @@ class CreateJournalEntriesTable extends Migration
     {
         Schema::create('journal_entries', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('pet_id');
+            $table->unsignedBigInteger('pet_id');
             $table->string('title');
             $table->string('event');
             $table->longText('content');
             $table->string('profile_url')->default('blank.profile.picture.png');
             $table->string('location')->nullable();
             $table->string('mood')->nullable();
-            $table->string('keywords')->nullable();
+            $table->string('tags')->nullable();
             $table->timestamps();
         });
     }

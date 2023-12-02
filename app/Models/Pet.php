@@ -33,7 +33,7 @@ class Pet extends Model
      */
     public function journalEntries()
     {
-        return $this->belongsToMany(JournalEntry::class, 'pet_journal_entries');
+        return $this->belongsToMany(JournalEntry::class, 'pet_journal_entries', 'pet_id', 'journal_entry_id');
     }
 
     /**

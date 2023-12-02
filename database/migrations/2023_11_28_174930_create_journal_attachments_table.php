@@ -15,7 +15,7 @@ class CreateJournalAttachmentsTable extends Migration
     {
         Schema::create('journal_attachments', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('journal_id');
+            $table->unsignedBigInteger('journal_id');
             $table->string('type');
             $table->text('source_url');
             $table->timestamps();

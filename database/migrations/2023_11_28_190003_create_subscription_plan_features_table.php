@@ -15,7 +15,7 @@ class CreateSubscriptionPlanFeaturesTable extends Migration
     {
         Schema::create('subscription_plan_features', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('subscription_plan_id');
+            $table->unsignedBigInteger('subscription_plan_id');
             $table->text('feature');
             $table->timestamps();
         });

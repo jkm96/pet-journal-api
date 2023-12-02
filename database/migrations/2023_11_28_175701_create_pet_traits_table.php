@@ -15,7 +15,7 @@ class CreatePetTraitsTable extends Migration
     {
         Schema::create('pet_traits', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('pet_id');
+            $table->unsignedBigInteger('pet_id');
             $table->string('trait')->nullable();
             $table->string('type')->nullable();//like,dislike
             $table->timestamps();

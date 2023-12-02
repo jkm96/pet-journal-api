@@ -17,8 +17,8 @@ class CreateUserSubscriptionsTable extends Migration
     {
         Schema::create('user_subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id');
-            $table->bigInteger('subscription_plan_id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('subscription_plan_id');
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             $table->string('status')->default(SubscriptionStatus::INACTIVE->name);

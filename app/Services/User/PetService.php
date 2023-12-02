@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Pet;
 use App\Models\PetTrait;
 use App\Models\User;
+use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -158,7 +159,7 @@ class PetService
             );
 
         } catch (ModelNotFoundException $e) {
-            return $this->itemNotFoundError($e);
+            return ModelCrudHelpers::itemNotFoundError($e);
         } catch (\Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
@@ -314,7 +315,7 @@ class PetService
             );
 
         } catch (ModelNotFoundException $e) {
-            return $this->itemNotFoundError($e);
+            return ModelCrudHelpers::itemNotFoundError($e);
         } catch (\Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
@@ -323,21 +324,4 @@ class PetService
             );
         }
     }
-
-    /**
-     * @param ModelNotFoundException|\Exception $e
-     * @return JsonResponse
-     */
-    public function itemNotFoundError(ModelNotFoundException|\Exception $e): JsonResponse
-    {
-        $fullyQualifiedName = $e->getModel();
-        $className = class_basename($fullyQualifiedName);
-
-        return ResponseHelpers::ConvertToJsonResponseWrapper(
-            ['error' => $className . ' not found'],
-            $className . ' not found',
-            404
-        );
-    }
-
 }
