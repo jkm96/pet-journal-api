@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreatePetRequest;
 use App\Http\Requests\CreatePetTraitRequest;
+use App\Http\Requests\EditPetProfilePictureRequest;
 use App\Http\Requests\EditPetRequest;
 use App\Http\Requests\EditPetTraitRequest;
 use App\Services\User\PetService;
@@ -49,6 +50,15 @@ class PetController extends Controller
     public function editPetProfile(EditPetRequest $editPetRequest, $petId): JsonResponse
     {
         return $this->_petService->updatePetProfile($editPetRequest->validated(), $petId);
+    }
+
+    /**
+     * @param EditPetProfilePictureRequest $editRequest
+     * @return JsonResponse
+     */
+    public function editPetProfilePicture(EditPetProfilePictureRequest $editRequest): JsonResponse
+    {
+        return $this->_petService->updatePetProfilePicture($editRequest->validated());
     }
 
     /**

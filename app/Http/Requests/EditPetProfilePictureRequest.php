@@ -8,7 +8,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CreatePetRequest extends FormRequest
+class EditPetProfilePictureRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,14 +26,8 @@ class CreatePetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:2',
-            'nickname' => 'nullable|string|min:2',
-            'species' => 'required|string|min:2',
-            'breed' => 'nullable|string|min:2',
-            'description' => 'required|string|min:6',
-            'date_of_birth' => 'nullable',
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'pet_traits' => 'nullable|array',
+            'pet_id' => 'required|integer',
+            'profile_picture' => 'required',
         ];
     }
 
@@ -41,7 +35,7 @@ class CreatePetRequest extends FormRequest
     {
         throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
             $validator->errors(),
-            "Pet profile creation failed due to validation errors",
+            "Pet profile picture update failed due to validation errors",
             422
         ));
     }

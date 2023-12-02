@@ -5,6 +5,7 @@ namespace App\Utils\Constants;
 class AppConstants
 {
     public static $pagination = 10;
+    public static $appName = 'pet chronicles';
     public static $subscriptionPlans = array(
         'basic' => 'BASIC',
         'premium' => 'PREMIUM',

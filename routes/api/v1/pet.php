@@ -7,6 +7,7 @@ Route::group(['prefix' => 'v1/pet', 'namespace' => 'api/v1', 'middleware' => 'ap
         Route::get('profiles', [PetController::class, 'getAllPetProfiles']);
         Route::post('create', [PetController::class, 'createPet']);
         Route::put('{petId}/edit', [PetController::class, 'editPetProfile']);
+        Route::post('edit-profile-picture', [PetController::class, 'editPetProfilePicture']);
         Route::delete('{petId}/delete', [PetController::class, 'deletePetProfile']);
     });
 });

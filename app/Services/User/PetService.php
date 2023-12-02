@@ -2,17 +2,19 @@
 
 namespace App\Services\User;
 
-use App\Http\Requests\EditPetRequest;
 use App\Http\Resources\PetProfileResource;
 use App\Http\Resources\PetTraitResource;
-use App\Http\Resources\UserResource;
 use App\Models\Pet;
 use App\Models\PetTrait;
-use App\Models\User;
+use App\Utils\Constants\AppConstants;
 use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\ResponseHelpers;
+use Carbon\Carbon;
+use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\File;
 
 class PetService
 {
@@ -25,6 +27,8 @@ class PetService
     {
         try {
             $user = auth()->user();
+            $profileUrl = $this->getPetProfileUrl($petRequest['profile_picture'], $petRequest['name']);
+
             $pet = Pet::create([
                 'user_id' => $user->getAuthIdentifier(),
                 'name' => $petRequest['name'],
@@ -33,7 +37,7 @@ class PetService
                 'breed' => $petRequest['breed'],
                 'description' => $petRequest['description'],
                 'date_of_birth' => $petRequest['date_of_birth'],
-                'profile_url' => $petRequest['profile_url']
+                'profile_url' => $profileUrl
             ]);
 
             if ($pet && $petRequest['pet_traits']) {
@@ -135,6 +139,55 @@ class PetService
     }
 
     /**
+     * @param $updateRequest
+     * @return JsonResponse
+     */
+    public function updatePetProfilePicture($updateRequest): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            $pet = Pet::findOrFail($updateRequest['pet_id']);
+
+            if ($user->getAuthIdentifier() !== $pet->user_id) {
+                return ResponseHelpers::ConvertToJsonResponseWrapper(
+                    [],
+                    'Unauthorized to edit resource',
+                    403
+                );
+            }
+
+            if ($updateRequest['profile_picture']) {
+                $oldProfilePicture = $pet->profile_url;
+                $profileUrl = $this->getPetProfileUrl($updateRequest['profile_picture'], $pet->name);
+                $pet->profile_url = $profileUrl;
+                $pet->update();
+
+                $this->deletePetProfilePicture($oldProfilePicture);
+
+                return ResponseHelpers::ConvertToJsonResponseWrapper(
+                    $pet->profile_url,
+                    'Profile picture updated successfully',
+                    200
+                );
+            }
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => 'The request did not contain any profile picture'],
+                'No profile picture found',
+                400
+            );
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (\Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error during pet profile picture update',
+                400
+            );
+        }
+    }
+
+    /**
      * @param $petId
      * @return JsonResponse
      */
@@ -154,7 +207,7 @@ class PetService
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 $pet->name,
-                $pet->name.'s profile deleted successfully',
+                $pet->name . 's profile deleted successfully',
                 200
             );
 
@@ -322,6 +375,35 @@ class PetService
                 'Error during pet trait deletion',
                 400
             );
+        }
+    }
+
+    /**
+     * @param $image
+     * @param $petName
+     * @return \Illuminate\Contracts\Foundation\Application|UrlGenerator|Application|string
+     */
+    public function getPetProfileUrl($image, $petName): \Illuminate\Contracts\Foundation\Application|UrlGenerator|string|Application
+    {
+        $constructName = AppConstants::$appName . '-' . $petName . '-' . Carbon::now() . '.' . $image->extension();
+        $imageName = str_replace(' ', '-', $constructName);
+        $image->move(public_path('images/profile_pictures'), $imageName);
+
+        return url('images/profile_pictures/' . $imageName);
+    }
+
+    /**
+     * @param $profileUrl
+     * @return void
+     */
+    public function deletePetProfilePicture($profileUrl)
+    {
+        // Extract the file path from the URL
+        $filePath = public_path(parse_url($profileUrl, PHP_URL_PATH));
+
+        // Check if the file exists before attempting to delete it
+        if (File::exists($filePath)) {
+            File::delete($filePath);
         }
     }
 }
