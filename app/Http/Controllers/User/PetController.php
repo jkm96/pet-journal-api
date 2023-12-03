@@ -43,6 +43,15 @@ class PetController extends Controller
     }
 
     /**
+     * @param $petName
+     * @return JsonResponse
+     */
+    public function getPetProfileByName($petName): JsonResponse
+    {
+        return $this->_petService->getPetProfileByName($petName);
+    }
+
+    /**
      * @param EditPetRequest $editPetRequest
      * @param $petId
      * @return JsonResponse
@@ -67,7 +76,7 @@ class PetController extends Controller
      */
     public function deletePetProfile($petId): JsonResponse
     {
-        return $this->_petService->removePet($petId);
+        return $this->_petService->removePetProfile($petId);
     }
 
     /**

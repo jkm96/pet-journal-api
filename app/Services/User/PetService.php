@@ -87,6 +87,29 @@ class PetService
     }
 
     /**
+     * @param $petName
+     * @return JsonResponse
+     */
+    public function getPetProfileByName($petName): JsonResponse
+    {
+        $user = auth()->user();
+        $petProfile = $user->pets()->where('name',$petName)->first();
+        if ($petProfile){
+            $petTraits = $petProfile->petTraits;
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                new PetProfileResource($petProfile),
+                'Success',
+                200
+            );
+        }
+        return ResponseHelpers::ConvertToJsonResponseWrapper(
+            [],
+            'Success',
+            200
+        );
+    }
+
+    /**
      * @param $request
      * @param $petId
      * @return JsonResponse
@@ -122,6 +145,8 @@ class PetService
                 "Pet profile updated successfully",
                 200
             );
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
         } catch (\Exception $e) {
             if ($e->getCode() === '23000') {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
@@ -191,7 +216,7 @@ class PetService
      * @param $petId
      * @return JsonResponse
      */
-    public function removePet($petId): JsonResponse
+    public function removePetProfile($petId): JsonResponse
     {
         try {
             $user = auth()->user();
@@ -261,6 +286,8 @@ class PetService
                 200
             );
 
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
         } catch (\Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
@@ -351,7 +378,7 @@ class PetService
     {
         try {
             $user = auth()->user();
-            $pet = $user->pets()->findOrFail($petId);
+            $user->pets()->findOrFail($petId);
             $petTrait = PetTrait::findOrFail($petTraitId);
             if ($user->getAuthIdentifier() !== $petTrait->pet->user_id) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
@@ -396,7 +423,7 @@ class PetService
      * @param $profileUrl
      * @return void
      */
-    public function deletePetProfilePicture($profileUrl)
+    public function deletePetProfilePicture($profileUrl): void
     {
         // Extract the file path from the URL
         $filePath = public_path(parse_url($profileUrl, PHP_URL_PATH));

@@ -64,7 +64,10 @@ class JournalEntryService
         }
     }
 
-    public function retrieveJournalEntries()
+    /**
+     * @return JsonResponse
+     */
+    public function retrieveJournalEntries(): JsonResponse
     {
         try {
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
