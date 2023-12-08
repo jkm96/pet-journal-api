@@ -32,12 +32,15 @@ class CreateJournalEntryRequest extends FormRequest
             'location' => 'nullable|string|min:2',
             'mood' => 'nullable|string|min:2',
             'tags' => 'nullable|string',
-            'profile_url' => 'nullable|string',
-            'pet_ids' => 'required|array|exists:pets,id',
+            'pet_ids' =>'required'
         ];
     }
 
-    public function failedValidation(Validator $validator)
+    /**
+     * @param Validator $validator
+     * @return mixed
+     */
+    public function failedValidation(Validator $validator): mixed
     {
         throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
             $validator->errors(),

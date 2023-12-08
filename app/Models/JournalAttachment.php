@@ -20,6 +20,6 @@ class JournalAttachment extends Model
      */
     public function journalEntry()
     {
-        return $this->belongsTo(JournalEntry::class);
+        return $this->belongsTo(JournalEntry::class, 'journal_id', 'id');
     }
 }

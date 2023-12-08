@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateJournalEntryRequest;
 use App\Services\User\JournalEntryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class JournalEntryController extends Controller
 {
@@ -26,7 +27,8 @@ class JournalEntryController extends Controller
      * @return null
      */
     public function createJournalEntry(CreateJournalEntryRequest $entryRequest){
-        return $this->_journalEntryService->addJournalEntry($entryRequest);
+        $fileCount = $entryRequest->files->count();
+        return $this->_journalEntryService->addJournalEntry($entryRequest,$fileCount);
     }
 
     /**

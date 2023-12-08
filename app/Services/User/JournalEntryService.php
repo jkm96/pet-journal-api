@@ -3,25 +3,49 @@
 namespace App\Services\User;
 
 use App\Http\Resources\JournalEntryResource;
+use App\Models\JournalAttachment;
 use App\Models\JournalEntry;
 use App\Models\User;
+use App\Utils\Constants\AppConstants;
 use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\ResponseHelpers;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class JournalEntryService
 {
 
     /**
      * @param $entryRequest
+     * @param $fileCount
      * @return JsonResponse
      */
-    public function addJournalEntry($entryRequest): JsonResponse
+    public function addJournalEntry($entryRequest,$fileCount): JsonResponse
     {
         try {
-            $petIds = $entryRequest['pet_ids'];
+            $jsonString = $entryRequest['pet_ids'];
+            $petIds = json_decode($jsonString, true);
+            $validator = Validator::make(['pet_ids' => $petIds], [
+                'pet_ids' => [
+                    'required',
+                    'array',
+                    Rule::exists('pets', 'id')->whereIn('id', $petIds),
+                ],
+            ]);
+
+            if ($validator->fails()) {
+                return ResponseHelpers::ConvertToJsonResponseWrapper(
+                    ['error' => $validator->errors()->first('pet_ids')],
+                    'Invalid pet IDs',
+                    400
+                );
+            }
+
             $existingEntries = DB::table('pet_journal_entries')
                 ->join('journal_entries', 'journal_entries.id', '=', 'pet_journal_entries.journal_entry_id')
                 ->whereIn('pet_id', $petIds)
@@ -43,11 +67,13 @@ class JournalEntryService
                 'location' => $entryRequest['location'],
                 'mood' => $entryRequest['mood'],
                 'tags' => $entryRequest['tags'],
-                'profile_url' => $entryRequest['profile_url'],
             ]);
 
             // Attach the journal entry to the specified pets
-            $journalEntry->pets()->attach($entryRequest['pet_ids']);
+            $journalEntry->pets()->attach($petIds);
+
+            //upload journal attachments
+            $this->uploadJournalAttachments($entryRequest, $journalEntry,$fileCount);
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['journal_entry_id' => $journalEntry->id],
@@ -147,9 +173,9 @@ class JournalEntryService
             $userId = auth()->user()->getAuthIdentifier();
             User::findOrFail($userId);
             $journalEntry = JournalEntry::findOrFail($journalEntryId);
-            $journalPets = $journalEntry->pets->where('user_id',$userId)->count();
+            $journalPets = $journalEntry->pets->where('user_id', $userId)->count();
 
-            if ($journalPets < 0){
+            if ($journalPets < 0) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     [],
                     'Unauthorized to edit resource',
@@ -211,9 +237,8 @@ class JournalEntryService
     {
         try {
             User::findOrFail(auth()->user()->getAuthIdentifier());
-
             $journalEntry = JournalEntry::findOrFail($journalEntryId);
-
+            $journalAttachments = $journalEntry->journalAttachments;
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 new JournalEntryResource($journalEntry),
                 'Journal entry retrieved successfully',
@@ -227,6 +252,34 @@ class JournalEntryService
                 'Error retrieving journal entries',
                 500
             );
+        }
+    }
+
+    /**
+     * @param $entryRequest
+     * @param $journalEntry
+     * @param $fileCount
+     * @return void
+     */
+    public function uploadJournalAttachments($entryRequest, $journalEntry,$fileCount): void
+    {
+        if ($fileCount > 0) {
+            $counter = 0;
+            while ($entryRequest["attachment{$counter}"]) {
+                $file = $entryRequest["attachment{$counter}"];
+                $journalAttachment = new JournalAttachment();
+                $journalAttachment->journal_entry_id = $journalEntry->id;
+                $journalAttachment->type = "image";
+
+                $constructName = AppConstants::$appName . '-journal-entry-' . $entryRequest['event'] . '-' . Carbon::now() . '.' . $file->extension();
+                $imageName = str_replace(' ', '-', $constructName);
+                $file->move(public_path('images/journal_uploads'), str_replace(',', '', $imageName));
+                $sourceUrl = url('images/journal_uploads/' . $imageName);
+                $journalAttachment->source_url = $sourceUrl;
+                $journalAttachment->save();
+
+                $counter++;
+            }
         }
     }
 }
