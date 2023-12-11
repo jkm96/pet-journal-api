@@ -10,10 +10,14 @@ use App\Utils\Constants\AppConstants;
 use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,6 +32,7 @@ class JournalEntryService
     public function addJournalEntry($entryRequest,$fileCount): JsonResponse
     {
         try {
+            User::findOrFail(auth()->user()->getAuthIdentifier());
             $jsonString = $entryRequest['pet_ids'];
             $petIds = json_decode($jsonString, true);
             $validator = Validator::make(['pet_ids' => $petIds], [
@@ -81,7 +86,9 @@ class JournalEntryService
                 200
             );
 
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error during journal entry creation',
@@ -99,7 +106,7 @@ class JournalEntryService
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
 
             $journalEntries = $user->pets->flatMap(function ($pet) {
-                return $pet->journalEntries;
+                return $pet->journalEntries()->orderBy('created_at', 'desc')->get();
             })->unique('id');
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
@@ -109,7 +116,7 @@ class JournalEntryService
             );
         } catch (ModelNotFoundException $e) {
             return ModelCrudHelpers::itemNotFoundError($e);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error retrieving journal entries',
@@ -153,8 +160,9 @@ class JournalEntryService
                 'Journal entry updated successfully',
                 200
             );
-
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error during journal entry update',
@@ -194,7 +202,7 @@ class JournalEntryService
 
         } catch (ModelNotFoundException $e) {
             return ModelCrudHelpers::itemNotFoundError($e);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error deleting journal entry',
@@ -220,7 +228,7 @@ class JournalEntryService
             );
         } catch (ModelNotFoundException $e) {
             return ModelCrudHelpers::itemNotFoundError($e);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error retrieving journal entries',
@@ -230,15 +238,17 @@ class JournalEntryService
     }
 
     /**
-     * @param $journalEntryId
+     * @param $journalSlug
      * @return JsonResponse
      */
-    public function retrieveJournalEntryById($journalEntryId): JsonResponse
+    public function retrieveJournalEntryBySlug($journalSlug): JsonResponse
     {
         try {
-            User::findOrFail(auth()->user()->getAuthIdentifier());
-            $journalEntry = JournalEntry::findOrFail($journalEntryId);
+            $user = User::findOrFail(auth()->user()->getAuthIdentifier());
+            $journalEntry = $user->journalEntries()->where('slug',$journalSlug)->firstOrFail();
             $journalAttachments = $journalEntry->journalAttachments;
+            $pets = $journalEntry->pets;
+
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 new JournalEntryResource($journalEntry),
                 'Journal entry retrieved successfully',
@@ -246,7 +256,48 @@ class JournalEntryService
             );
         } catch (ModelNotFoundException $e) {
             return ModelCrudHelpers::itemNotFoundError($e);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error retrieving journal entries',
+                500
+            );
+        }
+    }
+
+    /**
+     * @param $journalId
+     * @return JsonResponse
+     */
+    public function retrieveJournalEntryAttachmentBuffers($journalId): JsonResponse
+    {
+        try {
+            $user = User::findOrFail(auth()->user()->getAuthIdentifier());
+            $journalEntry = $user->journalEntries()->where('id',$journalId)->firstOrFail();
+            $journalAttachments = $journalEntry->journalAttachments;
+            $buffers = [];
+
+            foreach ($journalAttachments as $attachment) {
+                $sourceUrl = $attachment->source_url;
+                $filePath = parse_url($sourceUrl, PHP_URL_PATH);
+                $fileName = pathinfo($filePath, PATHINFO_BASENAME);
+                $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+                $publicPath = public_path('images/journal_uploads/'.$fileName);
+                $imageContents = file_get_contents($publicPath);
+                $buffers[] = [
+                    'image_buffer' => base64_encode($imageContents),
+                    'image_type' => $extension,
+                ];
+            }
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                $buffers,
+                'Journal attachment buffers retrieved successfully',
+                200
+            );
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error retrieving journal entries',
@@ -271,9 +322,9 @@ class JournalEntryService
                 $journalAttachment->journal_entry_id = $journalEntry->id;
                 $journalAttachment->type = "image";
 
-                $constructName = AppConstants::$appName . '-journal-entry-' . $entryRequest['event'] . '-' . Carbon::now() . '.' . $file->extension();
-                $imageName = str_replace(' ', '-', $constructName);
-                $file->move(public_path('images/journal_uploads'), str_replace(',', '', $imageName));
+                $constructName = AppConstants::$appName . '-journal-entry-' . $entryRequest['title'] . '-' . Carbon::now() . '.' . $file->extension();
+                $imageName = Str::lower(str_replace(' ', '-', $constructName));
+                $file->move(public_path('images/journal_uploads'), $imageName);
                 $sourceUrl = url('images/journal_uploads/' . $imageName);
                 $journalAttachment->source_url = $sourceUrl;
                 $journalAttachment->save();

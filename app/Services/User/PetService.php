@@ -6,6 +6,7 @@ use App\Http\Resources\PetProfileResource;
 use App\Http\Resources\PetTraitResource;
 use App\Models\Pet;
 use App\Models\PetTrait;
+use App\Models\User;
 use App\Utils\Constants\AppConstants;
 use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\ResponseHelpers;
@@ -26,11 +27,9 @@ class PetService
     public function createPetProfile($petRequest): JsonResponse
     {
         try {
-            $user = auth()->user();
             $profileUrl = $this->getPetProfileUrl($petRequest['profile_picture'], $petRequest['name']);
 
             $pet = Pet::create([
-                'user_id' => $user->getAuthIdentifier(),
                 'name' => $petRequest['name'],
                 'nickname' => $petRequest['nickname'],
                 'species' => $petRequest['species'],
@@ -87,26 +86,30 @@ class PetService
     }
 
     /**
-     * @param $petName
+     * @param $petSlug
      * @return JsonResponse
      */
-    public function getPetProfileByName($petName): JsonResponse
+    public function getPetProfileBySlug($petSlug): JsonResponse
     {
-        $user = auth()->user();
-        $petProfile = $user->pets()->where('name',$petName)->first();
-        if ($petProfile){
+        try {
+            $user = User::findOrFail(auth()->user()->getAuthIdentifier());
+            $petProfile = $user->pets()->where('slug', $petSlug)->firstOrFail();
             $petTraits = $petProfile->petTraits;
+
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 new PetProfileResource($petProfile),
                 'Success',
                 200
             );
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (\Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error retrieving pet profile',
+                500
+            );
         }
-        return ResponseHelpers::ConvertToJsonResponseWrapper(
-            [],
-            'Success',
-            200
-        );
     }
 
     /**

@@ -62,10 +62,18 @@ class JournalEntryController extends Controller
     }
 
     /**
+     * @param $slug
+     * @return JsonResponse
+     */
+    public function getJournalEntryBySlug($slug){
+        return $this->_journalEntryService->retrieveJournalEntryBySlug($slug);
+    }
+
+    /**
      * @param $journalId
      * @return JsonResponse
      */
-    public function getJournalEntryById($journalId){
-        return $this->_journalEntryService->retrieveJournalEntryById($journalId);
+    public function getJournalEntryAttachmentBuffers($journalId){
+        return $this->_journalEntryService->retrieveJournalEntryAttachmentBuffers($journalId);
     }
 }

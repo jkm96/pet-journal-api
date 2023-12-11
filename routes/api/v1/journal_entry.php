@@ -9,7 +9,8 @@ Route::group(['prefix' => 'v1/journal-entry', 'namespace' => 'api/v1', 'middlewa
         Route::post('create', [JournalEntryController::class, 'createJournalEntry']);
         Route::put('{journalId}/edit', [JournalEntryController::class, 'editJournalEntry']);
         Route::delete('{journalId}/delete', [JournalEntryController::class, 'deleteJournalEntry']);
-        Route::get('{journalId}', [JournalEntryController::class, 'getJournalEntryById']);
+        Route::get('{journalId}/attachment', [JournalEntryController::class, 'getJournalEntryAttachmentBuffers']);
+        Route::get('{slug}', [JournalEntryController::class, 'getJournalEntryBySlug']);
         Route::get('pet/{petId}', [JournalEntryController::class, 'getJournalEntriesByPet']);
     });
 });

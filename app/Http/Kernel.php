@@ -2,10 +2,13 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\AddImageCorsMiddleware;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\ConvertRequestFieldsToSnakeCase;
 use App\Http\Middleware\ConvertResponseFieldsToCamelCase;
 use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\LogHeadersMiddleware;
+use App\Http\Middleware\PetChronicleCorsMiddleware;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\TrimStrings;
@@ -39,13 +42,14 @@ class Kernel extends HttpKernel
      * @var array<int, class-string|string>
      */
     protected $middleware = [
-        // \App\Http\Middleware\TrustHosts::class,
-        TrustProxies::class,
         HandleCors::class,
+        TrustProxies::class,
         PreventRequestsDuringMaintenance::class,
         ValidatePostSize::class,
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
+        AddImageCorsMiddleware::class,
+        LogHeadersMiddleware::class,
     ];
 
     /**
@@ -64,7 +68,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            HandleCors::class,
             ThrottleRequests::class.':api',
             SubstituteBindings::class,
             ConvertRequestFieldsToSnakeCase::class,

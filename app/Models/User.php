@@ -52,7 +52,7 @@ class User extends Authenticatable
      */
     public function journalEntries()
     {
-        return $this->hasManyThrough(JournalEntry::class,Pet::class);
+        return $this->hasMany(JournalEntry::class);
     }
 
     /**

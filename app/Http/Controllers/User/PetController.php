@@ -31,7 +31,7 @@ class PetController extends Controller
      */
     public function createPet(CreatePetRequest $createPetRequest): JsonResponse
     {
-        return $this->_petService->createPetProfile($createPetRequest->validated());
+        return $this->_petService->createPetProfile($createPetRequest);
     }
 
     /**
@@ -46,9 +46,9 @@ class PetController extends Controller
      * @param $petName
      * @return JsonResponse
      */
-    public function getPetProfileByName($petName): JsonResponse
+    public function getPetProfileBySlug($slug): JsonResponse
     {
-        return $this->_petService->getPetProfileByName($petName);
+        return $this->_petService->getPetProfileBySlug($slug);
     }
 
     /**
