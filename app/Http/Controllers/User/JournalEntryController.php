@@ -76,4 +76,13 @@ class JournalEntryController extends Controller
     public function getJournalEntryAttachmentBuffers($journalId){
         return $this->_journalEntryService->retrieveJournalEntryAttachmentBuffers($journalId);
     }
+
+    /**
+     * @param Request $uploadRequest
+     * @return null
+     */
+    public function uploadJournalEntryAttachment(Request $uploadRequest){
+        $fileCount = $uploadRequest->files->count();
+        return $this->_journalEntryService->addJournalEntryAttachments($uploadRequest,$fileCount);
+    }
 }

@@ -29,7 +29,7 @@ class JournalEntryService
      * @param $fileCount
      * @return JsonResponse
      */
-    public function addJournalEntry($entryRequest,$fileCount): JsonResponse
+    public function addJournalEntry($entryRequest, $fileCount): JsonResponse
     {
         try {
             User::findOrFail(auth()->user()->getAuthIdentifier());
@@ -78,7 +78,7 @@ class JournalEntryService
             $journalEntry->pets()->attach($petIds);
 
             //upload journal attachments
-            $this->uploadJournalAttachments($entryRequest, $journalEntry,$fileCount);
+            $this->uploadJournalAttachments($entryRequest, $journalEntry, $fileCount);
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['journal_entry_id' => $journalEntry->id],
@@ -245,7 +245,7 @@ class JournalEntryService
     {
         try {
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
-            $journalEntry = $user->journalEntries()->where('slug',$journalSlug)->firstOrFail();
+            $journalEntry = $user->journalEntries()->where('slug', $journalSlug)->firstOrFail();
             $journalAttachments = $journalEntry->journalAttachments;
             $pets = $journalEntry->pets;
 
@@ -273,7 +273,7 @@ class JournalEntryService
     {
         try {
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
-            $journalEntry = $user->journalEntries()->where('id',$journalId)->firstOrFail();
+            $journalEntry = $user->journalEntries()->where('id', $journalId)->firstOrFail();
             $journalAttachments = $journalEntry->journalAttachments;
             $buffers = [];
 
@@ -282,7 +282,7 @@ class JournalEntryService
                 $filePath = parse_url($sourceUrl, PHP_URL_PATH);
                 $fileName = pathinfo($filePath, PATHINFO_BASENAME);
                 $extension = pathinfo($filePath, PATHINFO_EXTENSION);
-                $publicPath = public_path('images/journal_uploads/'.$fileName);
+                $publicPath = public_path('images/journal_uploads/' . $fileName);
                 $imageContents = file_get_contents($publicPath);
                 $buffers[] = [
                     'image_buffer' => base64_encode($imageContents),
@@ -312,7 +312,7 @@ class JournalEntryService
      * @param $fileCount
      * @return void
      */
-    public function uploadJournalAttachments($entryRequest, $journalEntry,$fileCount): void
+    public function uploadJournalAttachments($entryRequest, $journalEntry, $fileCount): void
     {
         if ($fileCount > 0) {
             $counter = 0;
@@ -322,15 +322,43 @@ class JournalEntryService
                 $journalAttachment->journal_entry_id = $journalEntry->id;
                 $journalAttachment->type = "image";
 
-                $constructName = AppConstants::$appName . '-journal-entry-' . $entryRequest['title'] . '-' . Carbon::now() . '.' . $file->extension();
+                $constructName = AppConstants::$appName.'-'.$counter. '-journal-entry-' . $journalEntry->title . '-' . Carbon::now() . '.' . $file->extension();
                 $imageName = Str::lower(str_replace(' ', '-', $constructName));
                 $file->move(public_path('images/journal_uploads'), $imageName);
                 $sourceUrl = url('images/journal_uploads/' . $imageName);
                 $journalAttachment->source_url = $sourceUrl;
                 $journalAttachment->save();
-
                 $counter++;
             }
+        }
+    }
+
+    /**
+     * @param $uploadRequest
+     * @param int $fileCount
+     * @return JsonResponse
+     */
+    public function addJournalEntryAttachments($uploadRequest, int $fileCount): JsonResponse
+    {
+        try {
+            Log::info($uploadRequest);
+            $journalId = (int)$uploadRequest['journal_id'];
+            $user = User::findOrFail(auth()->user()->getAuthIdentifier());
+            $journalEntry = $user->journalEntries()->where('id', $journalId)->firstOrFail();
+            $this->uploadJournalAttachments($uploadRequest, $journalEntry, $fileCount);
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['message' => $fileCount . 'files uploaded successfully'],
+                $fileCount.' files uploaded successfully',
+                200
+            );
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error uploading attachments',
+                500
+            );
         }
     }
 }

@@ -20,7 +20,7 @@ class LogHeadersMiddleware
     public function handle(Request $request, Closure $next)
     {
         // Log request headers
-        Log::info('Request URL: ' . $request->fullUrl());
+//        Log::info('Request URL: ' . $request->fullUrl());
 //        $this->logHeaders('Request Headers', $request->header());
 
         $response = $next($request);

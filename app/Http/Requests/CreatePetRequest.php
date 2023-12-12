@@ -32,8 +32,7 @@ class CreatePetRequest extends FormRequest
             'breed' => 'nullable|string|min:2',
             'description' => 'required|string|min:6',
             'date_of_birth' => 'nullable',
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'pet_traits' => 'nullable|array',
+            'pet_traits' => 'nullable|json',
         ];
     }
 

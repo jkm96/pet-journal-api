@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class PetService
 {
@@ -26,7 +27,15 @@ class PetService
      */
     public function createPetProfile($petRequest): JsonResponse
     {
+        Log::info($petRequest);
         try {
+            if (!$petRequest['profile_picture']){
+                return ResponseHelpers::ConvertToJsonResponseWrapper(
+                    ['error'=>"Pet profile picture is required"],
+                    "Pet profile picture is required",
+                    400
+                );
+            }
             $profileUrl = $this->getPetProfileUrl($petRequest['profile_picture'], $petRequest['name']);
 
             $pet = Pet::create([
@@ -39,7 +48,7 @@ class PetService
                 'profile_url' => $profileUrl
             ]);
 
-            if ($pet && $petRequest['pet_traits']) {
+            if ($pet && $petRequest['pet_traits'] != null) {
                 foreach ($petRequest['pet_traits'] as $trait) {
                     $petTrait = new PetTrait();
                     $petTrait->pet_id = $pet->id;
@@ -413,7 +422,7 @@ class PetService
      * @param $petName
      * @return \Illuminate\Contracts\Foundation\Application|UrlGenerator|Application|string
      */
-    public function getPetProfileUrl($image, $petName): \Illuminate\Contracts\Foundation\Application|UrlGenerator|string|Application
+    public function  getPetProfileUrl($image, $petName): \Illuminate\Contracts\Foundation\Application|UrlGenerator|string|Application
     {
         $constructName = AppConstants::$appName . '-' . $petName . '-' . Carbon::now() . '.' . $image->extension();
         $imageName = str_replace(' ', '-', $constructName);
