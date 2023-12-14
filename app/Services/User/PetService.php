@@ -347,29 +347,32 @@ class PetService
             if (!$pet) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     [],
-                    'Pet no found',
+                    'Pet not found',
                     404
                 );
             }
 
-            $existingTrait = $pet->petTraits()->where('trait', $petTraitRequest['trait'])->first();
-            if ($existingTrait) {
-                return ResponseHelpers::ConvertToJsonResponseWrapper(
-                    $petTraitRequest['trait'],
-                    "Error: A similar pet trait already exists under this pet profile",
-                    400
-                );
+            // Assuming $petTraitRequest['traits'] is an array of traits
+            foreach ($petTraitRequest['traits'] as $trait) {
+                $existingTrait = $pet->petTraits()->where('trait', $trait['trait'])->first();
+                if ($existingTrait) {
+                    return ResponseHelpers::ConvertToJsonResponseWrapper(
+                        $trait['trait'],
+                        "Error: A similar pet trait already exists under this pet profile",
+                        400
+                    );
+                }
+
+                $petTrait = new PetTrait();
+                $petTrait->pet_id = $petId;
+                $petTrait->trait = $trait['trait'];
+                $petTrait->type = $trait['type'];
+                $petTrait->saveOrFail();
             }
 
-            $petTrait = new PetTrait();
-            $petTrait->pet_id = $petId;
-            $petTrait->trait = $petTraitRequest['trait'];
-            $petTrait->type = $petTraitRequest['type'];
-            $petTrait->saveOrFail();
-
             return ResponseHelpers::ConvertToJsonResponseWrapper(
-                new PetTraitResource($petTrait),
-                'Pet trait created successfully',
+                'Pet traits created successfully',
+                'Pet traits created successfully',
                 200
             );
         } catch (\Exception $e) {

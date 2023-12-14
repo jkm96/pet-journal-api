@@ -43,7 +43,7 @@ class PetController extends Controller
     }
 
     /**
-     * @param $petName
+     * @param $slug
      * @return JsonResponse
      */
     public function getPetProfileBySlug($slug): JsonResponse
@@ -98,7 +98,7 @@ class PetController extends Controller
      */
     public function createPetTrait(CreatePetTraitRequest $petTraitRequest, $petId): JsonResponse
     {
-        return $this->_petService->addPetTrait($petTraitRequest->validated(),$petId);
+        return $this->_petService->addPetTrait($petTraitRequest,$petId);
     }
 
     /**

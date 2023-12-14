@@ -26,8 +26,7 @@ class CreatePetTraitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'trait' => 'required|string|min:2',
-            'type' => 'required|string|min:2',
+            'traits' => 'required|array',
         ];
     }
 
