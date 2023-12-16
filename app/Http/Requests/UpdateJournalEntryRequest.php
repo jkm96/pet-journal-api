@@ -30,9 +30,9 @@ class UpdateJournalEntryRequest extends FormRequest
             'event' => 'required|string|min:2',
             'content' => 'required|string|min:30',
             'location' => 'nullable|string|min:2',
-            'mood' => 'nullable|string|min:2',
+            'mood' => 'nullable|string',
             'tags' => 'nullable|string',
-            'profile_url' => 'nullable|string',
+            'pet_ids' => 'required',
         ];
     }
 

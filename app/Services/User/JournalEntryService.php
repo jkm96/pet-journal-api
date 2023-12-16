@@ -104,10 +104,10 @@ class JournalEntryService
     {
         try {
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
-
-            $journalEntries = $user->pets->flatMap(function ($pet) {
-                return $pet->journalEntries()->orderBy('created_at', 'desc')->get();
-            })->unique('id');
+            $journalEntries = $user->journalEntries()
+                ->with(['pets', 'journalAttachments']) // Specify relationships to be eager loaded
+                ->orderBy('created_at', 'desc')
+                ->get();
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 JournalEntryResource::collection($journalEntries),
@@ -147,12 +147,15 @@ class JournalEntryService
                 $journalEntry->title = $entryRequest['title'];
             }
 
+            $newPetIds = $entryRequest['pet_ids'];
+            $validPetIds = $user->pets->pluck('id')->intersect($newPetIds)->toArray();
+            $journalEntry->pets()->sync($validPetIds);
+
             $journalEntry->event = $entryRequest['event'];
             $journalEntry->content = $entryRequest['content'];
             $journalEntry->location = $entryRequest['location'];
             $journalEntry->mood = $entryRequest['mood'];
             $journalEntry->tags = $entryRequest['tags'];
-            $journalEntry->profile_url = $entryRequest['profile_url'];
             $journalEntry->update();
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(

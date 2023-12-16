@@ -40,6 +40,10 @@ class JournalEntryController extends Controller
         return $this->_journalEntryService->updateJournalEntry($entryRequest, $journalId);
     }
 
+    /**
+     * @param $journalId
+     * @return JsonResponse
+     */
     public function deleteJournalEntry($journalId){
         return $this->_journalEntryService->removeJournalEntry($journalId);
     }
