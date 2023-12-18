@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateJournalEntryRequest;
+use App\Http\Requests\FetchJournalEntriesRequest;
 use App\Http\Requests\UpdateJournalEntryRequest;
 use App\Services\User\JournalEntryService;
 use Illuminate\Http\JsonResponse;
@@ -44,16 +45,18 @@ class JournalEntryController extends Controller
      * @param $journalId
      * @return JsonResponse
      */
-    public function deleteJournalEntry($journalId){
+    public function deleteJournalEntry($journalId): JsonResponse
+    {
         return $this->_journalEntryService->removeJournalEntry($journalId);
     }
 
     /**
+     * @param FetchJournalEntriesRequest $entriesRequest
      * @return JsonResponse
      */
-    public function getAllJournalEntries(): JsonResponse
+    public function getAllJournalEntries(FetchJournalEntriesRequest $entriesRequest): JsonResponse
     {
-        return $this->_journalEntryService->retrieveJournalEntries();
+        return $this->_journalEntryService->retrieveJournalEntries($entriesRequest);
     }
 
     /**
@@ -69,7 +72,8 @@ class JournalEntryController extends Controller
      * @param $slug
      * @return JsonResponse
      */
-    public function getJournalEntryBySlug($slug){
+    public function getJournalEntryBySlug($slug): JsonResponse
+    {
         return $this->_journalEntryService->retrieveJournalEntryBySlug($slug);
     }
 

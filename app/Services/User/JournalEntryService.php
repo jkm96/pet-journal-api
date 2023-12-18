@@ -10,6 +10,7 @@ use App\Utils\Constants\AppConstants;
 use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Carbon\Carbon;
+use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -98,16 +99,37 @@ class JournalEntryService
     }
 
     /**
+     * @param $queryParams
      * @return JsonResponse
      */
-    public function retrieveJournalEntries(): JsonResponse
+    public function retrieveJournalEntries($queryParams): JsonResponse
     {
         try {
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
-            $journalEntries = $user->journalEntries()
-                ->with(['pets', 'journalAttachments']) // Specify relationships to be eager loaded
-                ->orderBy('created_at', 'desc')
-                ->get();
+           Log::info($queryParams);
+            if ($queryParams['fetch'] == "all"){
+                $query = $user->journalEntries()
+                    ->with(['pets', 'journalAttachments'])
+                    ->orderBy('created_at', 'desc');
+            }else{
+                $query = $user->journalEntries()
+                    ->orderBy('created_at', 'desc');
+            }
+
+            $searchTerm = $queryParams['search_term'];
+            if ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%');
+            }
+
+            $periodFrom = $queryParams['period_from'];
+            $periodTo = $queryParams['period_to'];
+            if ($periodFrom && $periodTo) {
+                $dateTimeFrom = DateTime::createFromFormat('Y-m-d', $periodFrom);
+                $dateTimeTo = DateTime::createFromFormat('Y-m-d', $periodTo);
+                $query->whereBetween('created_at', [$dateTimeFrom, $dateTimeTo]);
+            }
+
+            $journalEntries = $query->get();
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 JournalEntryResource::collection($journalEntries),
