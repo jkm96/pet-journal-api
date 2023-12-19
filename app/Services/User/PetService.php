@@ -199,7 +199,7 @@ class PetService
                 $pet->profile_url = $profileUrl;
                 $pet->update();
 
-                $this->deletePetProfilePicture($oldProfilePicture);
+                ModelCrudHelpers::deleteImageFromStorage($oldProfilePicture);
 
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     $pet->profile_url,
@@ -432,20 +432,5 @@ class PetService
         $image->move(public_path('images/profile_pictures'), $imageName);
 
         return url('images/profile_pictures/' . $imageName);
-    }
-
-    /**
-     * @param $profileUrl
-     * @return void
-     */
-    public function deletePetProfilePicture($profileUrl): void
-    {
-        // Extract the file path from the URL
-        $filePath = public_path(parse_url($profileUrl, PHP_URL_PATH));
-
-        // Check if the file exists before attempting to delete it
-        if (File::exists($filePath)) {
-            File::delete($filePath);
-        }
     }
 }

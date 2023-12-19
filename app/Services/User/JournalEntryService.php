@@ -106,7 +106,6 @@ class JournalEntryService
     {
         try {
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
-           Log::info($queryParams);
             if ($queryParams['fetch'] == "all"){
                 $query = $user->journalEntries()
                     ->with(['pets', 'journalAttachments'])
@@ -217,6 +216,12 @@ class JournalEntryService
             }
 
             $journalEntry->pets()->detach();
+            // delete associated attachments and remove media from storage
+            foreach ($journalEntry->journalAttachments as $attachment) {
+                ModelCrudHelpers::deleteImageFromStorage($attachment->source_url);
+                $attachment->delete();
+            }
+
             $journalEntry->delete();
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
@@ -304,13 +309,9 @@ class JournalEntryService
 
             foreach ($journalAttachments as $attachment) {
                 $sourceUrl = $attachment->source_url;
-                $filePath = parse_url($sourceUrl, PHP_URL_PATH);
-                $fileName = pathinfo($filePath, PATHINFO_BASENAME);
-                $extension = pathinfo($filePath, PATHINFO_EXTENSION);
-                $publicPath = public_path('images/journal_uploads/' . $fileName);
-                $imageContents = file_get_contents($publicPath);
+                list($extension, $imageContents) = ModelCrudHelpers::getImageBuffer($sourceUrl);
                 $buffers[] = [
-                    'image_buffer' => base64_encode($imageContents),
+                    'image_buffer' => $imageContents,
                     'image_type' => $extension,
                 ];
             }
