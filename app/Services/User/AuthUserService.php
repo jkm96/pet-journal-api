@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserVerification;
 use App\Utils\Enums\PetJournalPermission;
 use App\Utils\Enums\SubscriptionStatus;
+use App\Utils\Helpers\AuthHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -98,14 +99,7 @@ class AuthUserService
                     ->orWhere('username', $loginRequest['username'])
                     ->firstOrFail();
                 //TODO check if existing tokens are valid and return them instead of creating a new one
-                $token = $user->createToken('auth-token-' . $user->username, ['*'], Carbon::now()->addHours(12))->plainTextToken;
-                $tokenDetails = $user->tokens()->latest()->first();
-                $tokenDetails->token = $token;
-                $user->permissions->all();
-                $tokenResource = [
-                    "token" => new TokenResource($tokenDetails),
-                    "user" => new UserResource($user)
-                ];
+                $tokenResource = AuthHelpers::getUserTokenResource($user);
 
                 return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "logged in successfully", 200);
             }

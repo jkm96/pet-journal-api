@@ -164,7 +164,7 @@ class JournalEntryService
                 ->where('title', trim($entryRequest['title']))
                 ->count();
 
-            if ($existingEntries < 0) {
+            if ($existingEntries == 0) {
                 $journalEntry->title = $entryRequest['title'];
             }
 

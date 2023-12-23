@@ -48,8 +48,9 @@ class PetService
                 'profile_url' => $profileUrl
             ]);
 
-            if ($pet && $petRequest['pet_traits'] != null) {
-                foreach ($petRequest['pet_traits'] as $trait) {
+            if ($petRequest['pet_traits'] != "null" || $petRequest['pet_traits'] != '' ) {
+                $petTraits = json_decode($petRequest['pet_traits'],true);
+                foreach ($petTraits as $trait) {
                     $petTrait = new PetTrait();
                     $petTrait->pet_id = $pet->id;
                     $petTrait->trait = $trait['trait'];
