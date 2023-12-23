@@ -33,6 +33,8 @@ class JournalEntryService
     public function addJournalEntry($entryRequest, $fileCount): JsonResponse
     {
         try {
+            DB::beginTransaction();
+
             User::findOrFail(auth()->user()->getAuthIdentifier());
             $jsonString = $entryRequest['pet_ids'];
             $petIds = json_decode($jsonString, true);
@@ -81,6 +83,8 @@ class JournalEntryService
             //upload journal attachments
             $this->uploadJournalAttachments($entryRequest, $journalEntry, $fileCount);
 
+            DB::commit();
+
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['journal_entry_id' => $journalEntry->id],
                 'Journal entry created successfully',
@@ -88,8 +92,10 @@ class JournalEntryService
             );
 
         } catch (ModelNotFoundException $e) {
+            DB::rollBack();
             return ModelCrudHelpers::itemNotFoundError($e);
         } catch (Exception $e) {
+            DB::rollBack();
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error during journal entry creation',
@@ -154,6 +160,8 @@ class JournalEntryService
     public function updateJournalEntry($entryRequest, $journalEntryId): JsonResponse
     {
         try {
+            DB::beginTransaction();
+
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
             $journalEntry = JournalEntry::findOrFail($journalEntryId);
             $petIds = $user->pets->pluck('id')->toArray();
@@ -179,14 +187,18 @@ class JournalEntryService
             $journalEntry->tags = $entryRequest['tags'];
             $journalEntry->update();
 
+            DB::commit();
+
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['journal_entry_id' => $journalEntry->id],
                 'Journal entry updated successfully',
                 200
             );
         } catch (ModelNotFoundException $e) {
+            DB::rollBack();
             return ModelCrudHelpers::itemNotFoundError($e);
         } catch (Exception $e) {
+            DB::rollBack();
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error during journal entry update',
@@ -372,6 +384,7 @@ class JournalEntryService
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
             $journalEntry = $user->journalEntries()->where('id', $journalId)->firstOrFail();
             $this->uploadJournalAttachments($uploadRequest, $journalEntry, $fileCount);
+
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['message' => $fileCount . 'files uploaded successfully'],
                 $fileCount.' files uploaded successfully',

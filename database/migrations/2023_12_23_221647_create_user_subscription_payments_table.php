@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('user_subscription_payments', function (Blueprint $table) {
             $table->id();
+            $table->string('session_id');
+            $table->dateTime('session_created');
+            $table->dateTime('session_expires_at');
+            $table->string('customer');
+            $table->json('customer_details');
+            $table->string('invoice');
+            $table->string('payment_status');
+            $table->string('subscription');
             $table->timestamps();
         });
     }

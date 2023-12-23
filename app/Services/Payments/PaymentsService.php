@@ -6,6 +6,7 @@ use App\Models\SubscriptionPlan;
 use App\Models\UserSubscription;
 use App\Utils\Enums\SubscriptionStatus;
 use App\Utils\Helpers\AuthHelpers;
+use App\Utils\Helpers\DatetimeHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
@@ -36,8 +37,8 @@ class PaymentsService
                 'stripe_session_id' => $createPaymentRequest['session_id'],
                 'stripe_subscription' => $createPaymentRequest['subscription'],
                 'stripe_customer' => $createPaymentRequest['customer'],
-                'stripe_created' => $this->convertUnixTimestampToCarbonInstance($createPaymentRequest['created']),
-                'stripe_expires_at' => $this->convertUnixTimestampToCarbonInstance($createPaymentRequest['expires_at']),
+                'stripe_created' => DatetimeHelpers::convertUnixTimestampToCarbonInstance($createPaymentRequest['created']),
+                'stripe_expires_at' => DatetimeHelpers::convertUnixTimestampToCarbonInstance($createPaymentRequest['expires_at']),
                 'stripe_payment_status' => $createPaymentRequest['payment_status'],
                 'stripe_status' => $createPaymentRequest['status'],
             ]);
@@ -64,13 +65,4 @@ class PaymentsService
         }
     }
 
-    /**
-     * @param $timestamp
-     * @return string
-     */
-    public function convertUnixTimestampToCarbonInstance($timestamp): string
-    {
-        $dateTime = Carbon::createFromTimestamp($timestamp);
-        return $dateTime->format('Y-m-d H:i:s');
-    }
 }

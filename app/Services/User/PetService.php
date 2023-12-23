@@ -15,6 +15,7 @@ use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 
@@ -27,8 +28,9 @@ class PetService
      */
     public function createPetProfile($petRequest): JsonResponse
     {
-        Log::info($petRequest);
         try {
+            DB::beginTransaction();
+
             if (!$petRequest['profile_picture']){
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     ['error'=>"Pet profile picture is required"],
@@ -59,12 +61,15 @@ class PetService
                 }
             }
 
+            DB::commit();
+
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 new PetProfileResource($pet),
                 "Pet profile created successfully",
                 200
             );
         } catch (\Exception $e) {
+            DB::rollBack();
             if ($e->getCode() === '23000') {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     ['error' => 'The pet name must be unique for this user.'],
