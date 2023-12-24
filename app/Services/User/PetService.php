@@ -49,17 +49,7 @@ class PetService
                 'date_of_birth' => $petRequest['date_of_birth'],
                 'profile_url' => $profileUrl
             ]);
-
-            if ($petRequest['pet_traits'] != "null" || $petRequest['pet_traits'] != '' ) {
-                $petTraits = json_decode($petRequest['pet_traits'],true);
-                foreach ($petTraits as $trait) {
-                    $petTrait = new PetTrait();
-                    $petTrait->pet_id = $pet->id;
-                    $petTrait->trait = $trait['trait'];
-                    $petTrait->type = $trait['type'];
-                    $petTrait->saveOrFail();
-                }
-            }
+            //TODO add support for pet traits
 
             DB::commit();
 

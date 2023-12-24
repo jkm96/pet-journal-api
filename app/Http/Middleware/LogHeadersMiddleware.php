@@ -19,16 +19,16 @@ class LogHeadersMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // Log request headers
+
 //        Log::info('Request URL: ' . $request->fullUrl());
 //        $this->logHeaders('Request Headers', $request->header());
 
         $response = $next($request);
-
-        // Log response headers
-        if ($response->headers) {
+//
+//        // Log response headers
+//        if ($response->headers) {
 //            $this->logHeaders('Response Headers', $response->headers->all());
-        }
+//        }
 
         return $response;
     }

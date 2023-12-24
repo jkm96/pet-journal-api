@@ -10,6 +10,7 @@ use App\Http\Requests\UserVerificationRequest;
 use App\Services\User\AuthUserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Log;
 
 class AuthUserController extends Controller
 {
@@ -30,9 +31,10 @@ class AuthUserController extends Controller
      * @param UserRegistrationRequest $request
      * @return JsonResponse
      */
-    public function registerUser(UserRegistrationRequest $request)
+    public function registerUser(UserRegistrationRequest $request): JsonResponse
     {
-        return $this->_userService->registerUser($request->validated());
+       $origin = 'http://localhost:3000/';
+        return $this->_userService->registerUser($request, $origin);
     }
 
     /**
@@ -42,21 +44,9 @@ class AuthUserController extends Controller
      * @param UserVerificationRequest $request
      * @return JsonResponse
      */
-    public function verifyUser(UserVerificationRequest $request)
+    public function verifyUserEmail(UserVerificationRequest $request)
     {
-        return $this->_userService->verifyUserEmail($request->validated());
-    }
-
-    /**
-     * Display all the users
-     *
-     * This endpoint lets you get all the registered users from the storage
-     * @return AnonymousResourceCollection
-     * @throws CustomException
-     */
-    public function viewAllUsers()
-    {
-        return $this->_userService->getAllUsers();
+        return $this->_userService->verifyUserEmail($request);
     }
 
     /**

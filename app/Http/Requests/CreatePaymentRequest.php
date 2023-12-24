@@ -36,6 +36,10 @@ class CreatePaymentRequest extends FormRequest
         ];
     }
 
+    /**
+     * @param Validator $validator
+     * @return mixed
+     */
     public function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(

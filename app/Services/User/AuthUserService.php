@@ -6,9 +6,11 @@ use App\Exceptions\CustomException;
 use App\Http\Requests\UserVerificationRequest;
 use App\Http\Resources\TokenResource;
 use App\Http\Resources\UserResource;
+use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\Permission;
 use App\Models\User;
 use App\Models\UserVerification;
+use App\Utils\Enums\EmailTypes;
 use App\Utils\Enums\PetJournalPermission;
 use App\Utils\Enums\SubscriptionStatus;
 use App\Utils\Helpers\AuthHelpers;
@@ -18,17 +20,23 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AuthUserService
 {
     /**
      * @param $request
+     * @param $origin
      * @return JsonResponse
      */
-    public function registerUser($request): JsonResponse
+    public function registerUser($request, $origin): JsonResponse
     {
         try {
+            DB::beginTransaction();
+
             $user = User::create([
                 'username' => $request['username'],
                 'email' => $request['email'],
@@ -43,9 +51,30 @@ class AuthUserService
                 $userPermission->save();
             }
 
-            return ResponseHelpers::ConvertToJsonResponseWrapper(new UserResource($user), "Registered successfully'", 200);
+            //send email verification message
+            $token = Str::random(70);
+            $verificationUrl = $origin . 'auth/verify-user?token=' . $token;
 
+            UserVerification::create([
+                'user_id' => $user->id,
+                'token' => $token
+            ]);
+
+            DB::commit();
+
+            $details = [
+                'type' => EmailTypes::USER_VERIFICATION->name,
+                'recipientEmail' => trim($request['email']),
+                'username' => trim($request['username']),
+                'verificationUrl' => trim($verificationUrl),
+            ];
+            Log::info("email details", $details);
+//            DispatchEmailNotificationsJob::dispatch($details);
+
+            $tokenResource = AuthHelpers::getUserTokenResource($user);
+            return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "Registered successfully'", 200);
         } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during registration', 500);
         }
     }
@@ -67,22 +96,15 @@ class AuthUserService
                 $userVerify->user->is_email_verified = 1;
                 $userVerify->user->email_verified_at = Carbon::now();
                 $userVerify->user->save();
-                $message = "Email has been verified. You can now login";
+                $message = "Email has been verified.";
             } else {
-                $message = "Seems like your email is already verified. Kindly login";
+                $message = "Seems like your email is already verified.";
             }
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper([], $message, 200);
         }
 
-        return ResponseHelpers::ConvertToJsonResponseWrapper([], $message, 200);
-    }
-
-    /**
-     * @return JsonResponse
-     */
-    public function getAllUsers()
-    {
-        $users = User::all();
-        return ResponseHelpers::ConvertToJsonResponseWrapper(UserResource::collection($users), "success", 200);
+        return ResponseHelpers::ConvertToJsonResponseWrapper([], $message, 400);
     }
 
     /**

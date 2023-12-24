@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Utils\Helpers\ResponseHelpers;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -31,12 +32,16 @@ class UserLoginRequest extends FormRequest
         ];
     }
 
+    /**
+     * @param Validator $validator
+     * @return mixed
+     */
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json([
-            'success'   => false,
-            'message'   => 'Validation errors',
-            'data'      => $validator->errors()
-        ]));
+        throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
+            $validator->errors(),
+            "Login failed due to validation errors",
+            422
+        ));
     }
 }
