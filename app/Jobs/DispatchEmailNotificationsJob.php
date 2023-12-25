@@ -2,14 +2,16 @@
 
 namespace App\Jobs;
 
+use App\Mail\PaymentCheckoutConfirmationMail;
+use App\Mail\PaymentCheckoutReceiptMail;
 use App\Mail\UserVerificationMail;
 use App\Utils\Enums\EmailTypes;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class DispatchEmailNotificationsJob implements ShouldQueue
@@ -29,14 +31,24 @@ class DispatchEmailNotificationsJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle($emailData): void
     {
-        $emailData = $this->jodPayload;
-        switch ($emailData['type']) {
-            case EmailTypes::USER_VERIFICATION->name:
-                $email = new UserVerificationMail($emailData);
-                Mail::to($emailData['recipientEmail'])->send($email);
-                break;
+        try {
+            $email = null;
+            switch ($emailData['type']) {
+                case EmailTypes::USER_VERIFICATION->name:
+                    $email = new UserVerificationMail($emailData);
+                    break;
+                case EmailTypes::PAYMENT_CHECKOUT_RECEIPT->name:
+                    $email = new PaymentCheckoutReceiptMail($emailData);
+                    break;
+                case EmailTypes::PAYMENT_CHECKOUT_CONFIRMATION->name:
+                    $email = new PaymentCheckoutConfirmationMail($emailData);
+                    break;
+            }
+            Mail::to($emailData['recipientEmail'])->send($email);
+        } catch (\Exception $e) {
+            Log::error('Error sending email: ' . $e->getMessage());
         }
     }
 }

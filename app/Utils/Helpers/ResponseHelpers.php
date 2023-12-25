@@ -2,8 +2,6 @@
 
 namespace App\Utils\Helpers;
 
-use App\Http\Resources\UserResource;
-
 class ResponseHelpers
 {
     public static function ConvertToJsonResponseWrapper($data, $message,$statusCode)

@@ -4,14 +4,12 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-
-class UserVerificationMail extends Mailable
+class PaymentCheckoutConfirmationMail extends Mailable
 {
     use Queueable, SerializesModels;
     private $details;
@@ -30,8 +28,7 @@ class UserVerificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('info@petdiaries.io', 'Pet Diaries'),
-            subject: 'User Verification Mail',
+            subject: 'Payment Checkout Confirmation',
         );
     }
 
@@ -41,10 +38,9 @@ class UserVerificationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.email.verification',
+            view: 'mail.payment.checkout.confirmation',
             with: [
                 'username' => $this->details['username'],
-                'verificationUrl' => $this->details['verificationUrl'],
             ],
         );
     }

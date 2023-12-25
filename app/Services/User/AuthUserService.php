@@ -2,27 +2,19 @@
 
 namespace App\Services\User;
 
-use App\Exceptions\CustomException;
-use App\Http\Requests\UserVerificationRequest;
-use App\Http\Resources\TokenResource;
-use App\Http\Resources\UserResource;
 use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\Permission;
 use App\Models\User;
 use App\Models\UserVerification;
 use App\Utils\Enums\EmailTypes;
 use App\Utils\Enums\PetJournalPermission;
-use App\Utils\Enums\SubscriptionStatus;
 use App\Utils\Helpers\AuthHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AuthUserService
@@ -68,8 +60,8 @@ class AuthUserService
                 'username' => trim($request['username']),
                 'verificationUrl' => trim($verificationUrl),
             ];
-            Log::info("email details", $details);
-//            DispatchEmailNotificationsJob::dispatch($details);
+
+            DispatchEmailNotificationsJob::dispatch($details);
 
             $tokenResource = AuthHelpers::getUserTokenResource($user);
             return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "Registered successfully'", 200);

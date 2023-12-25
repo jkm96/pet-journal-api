@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Exceptions\CustomException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegistrationRequest;
 use App\Http\Requests\UserVerificationRequest;
 use App\Services\User\AuthUserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Log;
 
 class AuthUserController extends Controller
 {

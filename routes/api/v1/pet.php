@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\User\PetController;
 use Illuminate\Support\Facades\Route;
 

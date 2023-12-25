@@ -10,8 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-
-class UserVerificationMail extends Mailable
+class PaymentCheckoutReceiptMail extends Mailable
 {
     use Queueable, SerializesModels;
     private $details;
@@ -31,7 +30,7 @@ class UserVerificationMail extends Mailable
     {
         return new Envelope(
             from: new Address('info@petdiaries.io', 'Pet Diaries'),
-            subject: 'User Verification Mail',
+            subject: 'Payment Checkout Receipt',
         );
     }
 
@@ -41,10 +40,9 @@ class UserVerificationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.email.verification',
+            view: 'mail.payment.checkout.receipt',
             with: [
                 'username' => $this->details['username'],
-                'verificationUrl' => $this->details['verificationUrl'],
             ],
         );
     }

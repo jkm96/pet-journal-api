@@ -2,7 +2,9 @@
 
 namespace App\Listeners;
 
+use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\UserSubscriptionPayment;
+use App\Utils\Enums\EmailTypes;
 use App\Utils\Helpers\DatetimeHelpers;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
@@ -32,7 +34,7 @@ class PaymentCheckoutListener implements ShouldQueue
         UserSubscriptionPayment::create([
             'session_id' => $stripePayment->id,
             'session_created' => $sessionCreated,
-            'session_expires_at' =>$sessionExpires,
+            'session_expires_at' => $sessionExpires,
             'customer' => $stripePayment->customer,
             'customer_details' => json_encode($stripePayment->customer_details),
             'invoice' => $stripePayment->invoice,
@@ -41,5 +43,12 @@ class PaymentCheckoutListener implements ShouldQueue
         ]);
 
         // TODO: Send a receipt email to the customer
+        $details = [
+            'type' => EmailTypes::PAYMENT_CHECKOUT_RECEIPT->name,
+            'recipientEmail' => trim($stripePayment->customer_details->email),
+            'username' => trim($stripePayment->customer_details->name),
+        ];
+
+        DispatchEmailNotificationsJob::dispatch($details);
     }
 }

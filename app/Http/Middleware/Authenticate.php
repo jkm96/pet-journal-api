@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Exceptions\CustomException;
-use App\Utils\Helpers\ResponseHelpers;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
 

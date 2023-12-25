@@ -2,16 +2,9 @@
 
 namespace App\Services\Admin;
 
-use App\Utils\Constants\AppConstants;
 use App\Models\User;
+use App\Utils\Constants\AppConstants;
 use Carbon\Carbon;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Redirect;
 
 class ManageUserService
 {

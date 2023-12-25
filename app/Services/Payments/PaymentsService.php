@@ -2,8 +2,11 @@
 
 namespace App\Services\Payments;
 
+use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\SubscriptionPlan;
 use App\Models\UserSubscription;
+use App\Models\UserSubscriptionPayment;
+use App\Utils\Enums\EmailTypes;
 use App\Utils\Enums\SubscriptionStatus;
 use App\Utils\Helpers\AuthHelpers;
 use App\Utils\Helpers\DatetimeHelpers;
@@ -47,6 +50,21 @@ class PaymentsService
             $user->save();
 
             DB::commit();
+
+            $userSubscription = UserSubscriptionPayment::where('session_id', $createPaymentRequest['session_id'])
+                ->where('customer', $createPaymentRequest['customer'])
+                ->where('subscription', $createPaymentRequest['subscription'])
+                ->first();
+
+            if ($userSubscription) {
+                $details = [
+                    'type' => EmailTypes::PAYMENT_CHECKOUT_CONFIRMATION->name,
+                    'recipientEmail' => trim($user->email),
+                    'username' => trim($user->username),
+                ];
+
+                DispatchEmailNotificationsJob::dispatch($details);
+            }
 
             $tokenResource = AuthHelpers::getUserTokenResource($user);
 

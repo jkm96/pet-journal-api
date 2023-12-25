@@ -9,7 +9,6 @@ use App\Http\Requests\UpdateJournalEntryRequest;
 use App\Services\User\JournalEntryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class JournalEntryController extends Controller
 {

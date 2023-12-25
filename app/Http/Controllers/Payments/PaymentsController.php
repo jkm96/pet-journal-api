@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Payments;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreatePaymentRequest;
-use App\Http\Requests\CreatePetRequest;
 use App\Services\Payments\PaymentsService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class PaymentsController extends Controller
 {

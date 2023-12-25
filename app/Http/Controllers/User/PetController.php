@@ -10,7 +10,6 @@ use App\Http\Requests\EditPetRequest;
 use App\Http\Requests\EditPetTraitRequest;
 use App\Services\User\PetService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class PetController extends Controller
 {
