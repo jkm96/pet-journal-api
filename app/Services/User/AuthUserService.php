@@ -61,7 +61,7 @@ class AuthUserService
                 'verificationUrl' => trim($verificationUrl),
             ];
 
-            DispatchEmailNotificationsJob::dispatch($details);
+//            DispatchEmailNotificationsJob::dispatch($details);
 
             $tokenResource = AuthHelpers::getUserTokenResource($user);
             return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "Registered successfully'", 200);

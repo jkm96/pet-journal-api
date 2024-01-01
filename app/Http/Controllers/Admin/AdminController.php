@@ -6,18 +6,18 @@ use App\Exceptions\CustomException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminLoginRequest;
 use App\Http\Requests\AdminRegisterRequest;
-use App\Services\Admin\AdminService;
+use App\Services\Admin\AuthAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class AdminController extends Controller
 {
     /**
-     * @var AdminService
+     * @var AuthAdminService
      */
     private $_adminService;
 
-    public function __construct(AdminService $adminService)
+    public function __construct(AuthAdminService $adminService)
     {
         $this->_adminService = $adminService;
     }
@@ -32,18 +32,6 @@ class AdminController extends Controller
     public function registerAdmin(AdminRegisterRequest $request)
     {
         return $this->_adminService->registerAdmin($request->validated());
-    }
-
-    /**
-     * Display all the admins
-     *
-     * This endpoint lets you get all the registered admins from the storage
-     * @return AnonymousResourceCollection
-     * @throws CustomException
-     */
-    public function viewAllAdmins()
-    {
-        return $this->_adminService->getAllAdmins();
     }
 
     /**

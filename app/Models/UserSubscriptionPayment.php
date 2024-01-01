@@ -18,5 +18,4 @@ class UserSubscriptionPayment extends Model
         'payment_status',
         'subscription',
     ];
-
 }

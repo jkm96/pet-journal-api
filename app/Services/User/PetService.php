@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PetService
 {
@@ -422,7 +423,7 @@ class PetService
     public function  getPetProfileUrl($image, $petName): \Illuminate\Contracts\Foundation\Application|UrlGenerator|string|Application
     {
         $constructName = AppConstants::$appName . '-' . $petName . '-' . Carbon::now() . '.' . $image->extension();
-        $imageName = str_replace(' ', '-', $constructName);
+        $imageName = Str::lower(str_replace(' ', '-', $constructName));
         $image->move(public_path('images/profile_pictures'), $imageName);
 
         return url('images/profile_pictures/' . $imageName);

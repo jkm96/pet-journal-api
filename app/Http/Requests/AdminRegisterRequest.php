@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Utils\Helpers\ResponseHelpers;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -29,19 +30,19 @@ class AdminRegisterRequest extends FormRequest
             'username' => 'required|string|min:5|unique:admins',
             'email' => 'required|string|unique:admins',
             'password' => 'required',
-            'password_confirm' => 'required|min:6|same:password',
         ];
     }
 
     /**
      * @param Validator $validator
+     * @return mixed
      */
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json([
-            'success'   => false,
-            'message'   => 'Validation errors',
-            'data'      => $validator->errors()
-        ]));
+        throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
+            $validator->errors(),
+            "Admin registration failed due to validation errors",
+            422
+        ));
     }
 }
