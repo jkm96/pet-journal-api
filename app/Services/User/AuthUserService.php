@@ -2,7 +2,6 @@
 
 namespace App\Services\User;
 
-use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\Permission;
 use App\Models\User;
 use App\Models\UserVerification;
@@ -33,6 +32,7 @@ class AuthUserService
                 'username' => $request['username'],
                 'email' => $request['email'],
                 'password' => Hash::make($request['password']),
+                'is_active' => 1
             ]);
 
             foreach (PetJournalPermission::cases() as $journalPermission) {
@@ -108,11 +108,11 @@ class AuthUserService
         try {
             $credentials = filter_var($loginRequest['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-            if (Auth::attempt(array($credentials => $loginRequest['username'], 'password' => $loginRequest['password']))) {
+            if (Auth::attempt([$credentials => $loginRequest['username'], 'password' => $loginRequest['password'], 'is_active' => 1])) {
                 $user = User::where('email', $loginRequest['username'])
                     ->orWhere('username', $loginRequest['username'])
                     ->firstOrFail();
-                //TODO check if existing tokens are valid and return them instead of creating a new one
+
                 $tokenResource = AuthHelpers::getUserTokenResource($user);
 
                 return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "logged in successfully", 200);

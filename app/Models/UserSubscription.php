@@ -25,10 +25,18 @@ class UserSubscription extends Model
     ];
 
     /**
+     * Get the user that owns the UserSubscription.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
      * Get the SubscriptionPlan associated with the UserSubscription.
      */
     public function subscriptionPlan()
     {
-        return $this->hasOne(SubscriptionPlan::class);
+        return $this->belongsTo(SubscriptionPlan::class);
     }
 }

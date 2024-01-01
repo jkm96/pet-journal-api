@@ -41,6 +41,7 @@ class PaymentCheckoutConfirmationMail extends Mailable
             view: 'mail.payment.checkout.confirmation',
             with: [
                 'username' => $this->details['username'],
+                'invoice' => $this->details['invoice'],
             ],
         );
     }

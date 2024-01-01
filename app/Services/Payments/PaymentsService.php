@@ -25,6 +25,7 @@ class PaymentsService
     {
         $user = auth()->user();
         $subscription = SubscriptionPlan::firstOrFail();
+        $uniqueInvoice = $this->generateUniqueInvoice($user->username);
         DB::beginTransaction();
 
         try {
@@ -33,6 +34,7 @@ class PaymentsService
 
             UserSubscription::create([
                 'user_id' => $user->getAuthIdentifier(),
+                'invoice' => $uniqueInvoice,
                 'subscription_plan_id' => $subscription->id,
                 'start_date' => $startDate,
                 'end_date' => $endDate,
@@ -61,6 +63,7 @@ class PaymentsService
                     'type' => EmailTypes::PAYMENT_CHECKOUT_CONFIRMATION->name,
                     'recipientEmail' => trim($user->email),
                     'username' => trim($user->username),
+                    'invoice' => $uniqueInvoice,
                 ];
 
                 DispatchEmailNotificationsJob::dispatch($details);
@@ -83,4 +86,10 @@ class PaymentsService
         }
     }
 
+    private function generateUniqueInvoice($username)
+    {
+        $firstLetter = substr($username, 0, 1);
+        $lastLetter = substr($username, -1);
+        return 'PDINV'.strtoupper($firstLetter . $lastLetter) . Carbon::now()->format('dmyHis');
+    }
 }

@@ -2,16 +2,12 @@
 
 namespace App\Services\Admin;
 
-use App\Exceptions\CustomException;
 use App\Http\Resources\AdminResource;
-use App\Http\Resources\UserResource;
 use App\Models\Admin;
 use App\Utils\Helpers\ResponseHelpers;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthAdminService

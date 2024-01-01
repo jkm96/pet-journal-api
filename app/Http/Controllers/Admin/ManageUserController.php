@@ -6,11 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FetchUsersRequest;
 use App\Http\Requests\ToggleUserRequest;
 use App\Services\Admin\ManageUserService;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 
 class ManageUserController extends Controller
 {
@@ -41,5 +37,14 @@ class ManageUserController extends Controller
     public function toggleUserStatus($userId)
     {
         return $this->_manageUserService->toggleUser($userId);
+    }
+
+    /**
+     * @param $userId
+     * @return JsonResponse
+     */
+    public function toggleUserSubscriptionStatus($userId)
+    {
+        return $this->_manageUserService->toggleUserSubscription($userId);
     }
 }

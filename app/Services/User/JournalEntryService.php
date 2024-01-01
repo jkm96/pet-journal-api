@@ -9,8 +9,8 @@ use App\Models\User;
 use App\Utils\Constants\AppConstants;
 use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\ResponseHelpers;
+use App\Utils\Traits\DateFilterTrait;
 use Carbon\Carbon;
-use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +22,7 @@ use Illuminate\Validation\Rule;
 
 class JournalEntryService
 {
+    use DateFilterTrait;
 
     /**
      * @param $entryRequest
@@ -119,19 +120,7 @@ class JournalEntryService
                     ->orderBy('created_at', 'desc');
             }
 
-            $searchTerm = $queryParams['search_term'];
-            if ($searchTerm) {
-                $query->where('title', 'like', '%' . $searchTerm . '%');
-            }
-
-            $periodFrom = $queryParams['period_from'];
-            $periodTo = $queryParams['period_to'];
-            if ($periodFrom && $periodTo) {
-                $dateTimeFrom = DateTime::createFromFormat('Y-m-d', $periodFrom);
-                $dateTimeTo = DateTime::createFromFormat('Y-m-d', $periodTo);
-                $query->whereBetween('created_at', [$dateTimeFrom, $dateTimeTo]);
-            }
-
+            $this->applyFilters($query, $queryParams);
             $journalEntries = $query->get();
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
@@ -396,6 +385,35 @@ class JournalEntryService
                 'Error uploading attachments',
                 500
             );
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $queryParams
+     * @return void
+     */
+    private function applyFilters($query, $queryParams)
+    {
+        $this->applyDateFilters($query, $params['period_from'] ?? null, $params['period_to'] ?? null);
+        $this->applySearchTermFilter($query, $params['search_term'] ?? null);
+    }
+
+    /**
+     * @param $query
+     * @param $searchTerm
+     * @return void
+     */
+    private function applySearchTermFilter($query, $searchTerm)
+    {
+        if ($searchTerm) {
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('event', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('mood', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('tags', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('content', 'like', '%' . $searchTerm . '%');
+            });
         }
     }
 }

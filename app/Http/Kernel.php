@@ -8,7 +8,6 @@ use App\Http\Middleware\ConvertRequestFieldsToSnakeCase;
 use App\Http\Middleware\ConvertResponseFieldsToCamelCase;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\LogHeadersMiddleware;
-use App\Http\Middleware\PetChronicleCorsMiddleware;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\TrimStrings;

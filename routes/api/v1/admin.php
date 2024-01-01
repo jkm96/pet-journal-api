@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ManageUserController;
+use App\Http\Controllers\Admin\ManageUserSubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1/admin', 'namespace' => 'api/v1', 'middleware' => 'api'], function () {
@@ -13,5 +14,8 @@ Route::group(['prefix' => 'v1/admin', 'namespace' => 'api/v1', 'middleware' => '
 
         Route::get('users', [ManageUserController::class, 'getUsers']);
         Route::put('user/{userId}/toggle', [ManageUserController::class, 'toggleUserStatus']);
+        Route::put('user/{userId}/toggle-subscription', [ManageUserController::class, 'toggleUserSubscriptionStatus']);
+
+        Route::get('user-subscriptions', [ManageUserSubscriptionController::class, 'getUserSubscriptions']);
     });
 });
