@@ -2,6 +2,7 @@
 
 namespace App\Utils\Helpers;
 
+use App\Http\Resources\AdminResource;
 use App\Http\Resources\TokenResource;
 use App\Http\Resources\UserResource;
 use Carbon\Carbon;
@@ -10,19 +11,30 @@ class AuthHelpers
 {
 
     /**
-     * @param $user
+     * @param $apiUser
+     * @param $isAdmin
      * @return array
      */
-    public static function getUserTokenResource($user): array
+    public static function getUserTokenResource($apiUser, $isAdmin): array
     {
-        $token = $user->createToken('auth-token-' . $user->username, ['*'], Carbon::now()->addHours(12))->plainTextToken;
-        $tokenDetails = $user->tokens()->latest()->first();
+        $token = $apiUser->createToken('auth-token-' . $apiUser->username, ['*'], Carbon::now()->addHours(12))->plainTextToken;
+        $tokenDetails = $apiUser->tokens()->latest()->first();
         $tokenDetails->token = $token;
-        $user->permissions->all();
 
+        if ($isAdmin){
+            $apiUser->auth_token = $token;
+            $apiUser->update();
+
+            return [
+                "token" => new TokenResource($tokenDetails),
+                "user" => new AdminResource($apiUser)
+            ];
+        }
+
+        $apiUser->permissions->all();
         return [
             "token" => new TokenResource($tokenDetails),
-            "user" => new UserResource($user)
+            "user" => new UserResource($apiUser)
         ];
     }
 }

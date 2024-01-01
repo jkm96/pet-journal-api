@@ -16,10 +16,14 @@ class AdminResource extends JsonResource
      */
     public function toArray($request)
     {
-        $transformedData = collect($this->resource)->mapWithKeys(function ($value, $key) {
-            return [Str::camel($key) => $value];
-        });
-
-        return $transformedData->all();
+        return [
+            'id' => $this->id,
+            'username' => $this->username,
+            'email' => $this->email,
+            'profile_url' => $this->profile_url,
+            'is_email_verified' => $this->is_email_verified,
+            'is_admin' => 1,
+            'created_at' => $this->created_at,
+        ];
     }
 }

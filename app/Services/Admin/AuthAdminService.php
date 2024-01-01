@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Http\Resources\AdminResource;
 use App\Models\Admin;
+use App\Utils\Helpers\AuthHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -47,16 +48,9 @@ class AuthAdminService
                 return ResponseHelpers::ConvertToJsonResponseWrapper([], 'Login information is invalid.', 400);
 
             if (Hash::check($loginRequest["password"], $admin->password)){
-                $token = $admin->createToken('auth-token-' . $admin->username, ['*'], Carbon::now()->addHours(12))->plainTextToken;
-                $admin->auth_token = $token;
-                $admin->update();
+                $tokenResource = AuthHelpers::getUserTokenResource($admin,1);
 
-                $adminResource = [
-                    'token'=> $token,
-                    'admin'=> new AdminResource($admin)
-                ];
-
-                return ResponseHelpers::ConvertToJsonResponseWrapper($adminResource, 'logged in successfully', 200);
+                return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, 'logged in successfully', 200);
             }
 
             return ResponseHelpers::ConvertToJsonResponseWrapper([], 'Login information is invalid.', 400);

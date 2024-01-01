@@ -113,7 +113,7 @@ class AuthUserService
                     ->orWhere('username', $loginRequest['username'])
                     ->firstOrFail();
 
-                $tokenResource = AuthHelpers::getUserTokenResource($user);
+                $tokenResource = AuthHelpers::getUserTokenResource($user,0);
 
                 return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "logged in successfully", 200);
             }
