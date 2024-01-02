@@ -10,6 +10,7 @@ use App\Utils\Enums\PetJournalPermission;
 use App\Utils\Helpers\AuthHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -65,7 +66,7 @@ class AuthUserService
 
             $tokenResource = AuthHelpers::getUserTokenResource($user);
             return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "Registered successfully'", 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during registration', 500);
         }
@@ -119,7 +120,7 @@ class AuthUserService
             }
 
             return ResponseHelpers::ConvertToJsonResponseWrapper([], "Login information is invalid.", 401);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during user login', 500);
         }
     }

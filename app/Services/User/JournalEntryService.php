@@ -390,10 +390,10 @@ class JournalEntryService
 
     /**
      * @param $query
-     * @param $queryParams
+     * @param $params
      * @return void
      */
-    private function applyFilters($query, $queryParams)
+    private function applyFilters($query, $params)
     {
         $this->applyDateFilters($query, $params['period_from'] ?? null, $params['period_to'] ?? null);
         $this->applySearchTermFilter($query, $params['search_term'] ?? null);

@@ -15,17 +15,26 @@ use Illuminate\Support\Facades\Log;
 class ManageUserService
 {
     use DateFilterTrait;
+
+    /**
+     * @param $userQueryParams
+     * @return JsonResponse
+     */
     public function getAllUsers($userQueryParams)
     {
         try {
+            $pageSize = $userQueryParams['page_size'] ?? 10;
+            $currentPage = $userQueryParams['page_number'] ?? 1;
+
             $query = User::orderBy('created_at', 'desc');
             $this->applyFilters($query, $userQueryParams);
-            $users = $query->get();
-
-            return ResponseHelpers::ConvertToJsonResponseWrapper(
-                UserResource::collection($users),
+            $users = $query->paginate($pageSize, ['*'], 'page', $currentPage);
+            Log::info($users);
+            return ResponseHelpers::ConvertToPagedJsonResponseWrapper(
+                UserResource::collection($users->items()),
                 'Users retrieved successfully',
-                200
+                200,
+                $users
             );
         } catch (Exception $e) {
             Log::error('Exception when retrieving users: ' . $e->getMessage());
@@ -92,13 +101,24 @@ class ManageUserService
         }
     }
 
+    /**
+     * @param $query
+     * @param $params
+     * @return void
+     */
     private function applyFilters($query, $params)
     {
+        Log::info($params);
         $this->applyDateFilters($query, $params['period_from'] ?? null, $params['period_to'] ?? null);
         $this->applySearchTermFilter($query, $params['search_term'] ?? null);
         $this->applySubscriptionFilter($query, $params['is_subscribed'] ?? null);
     }
 
+    /**
+     * @param $query
+     * @param $searchTerm
+     * @return void
+     */
     private function applySearchTermFilter($query, $searchTerm)
     {
         if ($searchTerm) {
@@ -109,6 +129,11 @@ class ManageUserService
         }
     }
 
+    /**
+     * @param $query
+     * @param $subscribed
+     * @return void
+     */
     private function applySubscriptionFilter($query, $subscribed)
     {
         if ($subscribed !== null) {

@@ -6,9 +6,8 @@ use App\Http\Resources\AdminResource;
 use App\Models\Admin;
 use App\Utils\Helpers\AuthHelpers;
 use App\Utils\Helpers\ResponseHelpers;
-use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthAdminService
@@ -54,7 +53,7 @@ class AuthAdminService
             }
 
             return ResponseHelpers::ConvertToJsonResponseWrapper([], 'Login information is invalid.', 400);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during admin login', 500);
         }
     }
@@ -64,13 +63,8 @@ class AuthAdminService
      */
     public function logoutAdmin()
     {
-        dd(Auth::guard('admin')->check());
-        if (request()->user('admin-api')->currentAccessToken() != null)
-            request()->user('admin-api')->currentAccessToken()->delete();
-
-        return response()->json([
-            'success' => true,
-            'message'=>'logged out successfully'
-        ]);
+        auth()->user()->tokens()->delete();
+        //TODO delete admin access tokens
+        return ResponseHelpers::ConvertToJsonResponseWrapper([], "logged out successfully", 200);
     }
 }

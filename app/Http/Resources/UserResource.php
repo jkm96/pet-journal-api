@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             'status' => $this->status,
             'is_email_verified' => $this->is_email_verified,
             'is_subscribed' => $this->is_subscribed,
+            'is_active' => $this->is_active,
             'is_admin' => 0,
             'created_at' => $this->created_at,
             'permissions' => $this->whenLoaded('permissions', function () {

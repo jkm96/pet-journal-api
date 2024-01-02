@@ -6,7 +6,13 @@ use DateTime;
 
 trait DateFilterTrait
 {
-    private function applyDateFilters($query, $periodFrom, $periodTo)
+    /**
+     * @param $query
+     * @param $periodFrom
+     * @param $periodTo
+     * @return void
+     */
+    private function applyDateFilters($query, $periodFrom, $periodTo): void
     {
         if ($periodFrom && $periodTo) {
             $dateTimeFrom = DateTime::createFromFormat('Y-m-d', $periodFrom);
