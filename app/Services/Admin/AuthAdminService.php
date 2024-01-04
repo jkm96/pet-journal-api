@@ -16,7 +16,7 @@ class AuthAdminService
      * @param $request
      * @return JsonResponse
      */
-    public function registerAdmin($request)
+    public function registerAdmin($request): JsonResponse
     {
         try {
             $user = Admin::create([
@@ -35,7 +35,7 @@ class AuthAdminService
      * @param $loginRequest
      * @return JsonResponse
      */
-    public function loginAdmin($loginRequest)
+    public function loginAdmin($loginRequest): JsonResponse
     {
         try {
             $emailOrUsername = $loginRequest["username"];
@@ -61,10 +61,9 @@ class AuthAdminService
     /**
      * @return JsonResponse
      */
-    public function logoutAdmin()
+    public function logoutAdmin(): JsonResponse
     {
         auth()->user()->tokens()->delete();
-        //TODO delete admin access tokens
         return ResponseHelpers::ConvertToJsonResponseWrapper([], "logged out successfully", 200);
     }
 }
