@@ -84,7 +84,7 @@ class PetService
         $petProfiles = $user->pets()->orderBy('created_at', 'desc')->get();
         return ResponseHelpers::ConvertToJsonResponseWrapper(
             PetProfileResource::collection($petProfiles),
-            "Success",
+            "Fetched pets successfully",
             200
         );
     }
