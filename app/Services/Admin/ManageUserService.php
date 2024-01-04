@@ -29,7 +29,7 @@ class ManageUserService
             $query = User::orderBy('created_at', 'desc');
             $this->applyFilters($query, $userQueryParams);
             $users = $query->paginate($pageSize, ['*'], 'page', $currentPage);
-            Log::info($users);
+
             return ResponseHelpers::ConvertToPagedJsonResponseWrapper(
                 UserResource::collection($users->items()),
                 'Users retrieved successfully',
@@ -43,6 +43,31 @@ class ManageUserService
                 ['error' => $e->getMessage()],
                 'Error retrieving users',
                 $e->getCode() ?: 500
+            );
+        }
+    }
+
+    /**
+     * @param $userId
+     * @return JsonResponse
+     */
+    public function getUserById($userId)
+    {
+        try {
+            $user = User::findOrFail($userId);
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                new UserResource($user),
+                'User fetched successfully',
+                200
+            );
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (\Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error fetching user details',
+                500
             );
         }
     }

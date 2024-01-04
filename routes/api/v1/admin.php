@@ -12,8 +12,9 @@ Route::group(['prefix' => 'v1/admin', 'namespace' => 'api/v1', 'middleware' => '
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AdminController::class, 'logoutAdmin']);
 
-        Route::get('users', [ManageUserController::class, 'getUsers']);
-        Route::put('user/{userId}/toggle', [ManageUserController::class, 'toggleUserStatus']);
+        Route::get('user', [ManageUserController::class, 'getUsers']);
+        Route::get('user/{userId}', [ManageUserController::class, 'getUserById']);
+        Route::put('user/{userId}/toggle-status', [ManageUserController::class, 'toggleUserStatus']);
         Route::put('user/{userId}/toggle-subscription', [ManageUserController::class, 'toggleUserSubscriptionStatus']);
 
         Route::get('user-subscriptions', [ManageUserSubscriptionController::class, 'getUserSubscriptions']);

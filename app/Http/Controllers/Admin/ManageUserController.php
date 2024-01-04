@@ -34,6 +34,15 @@ class ManageUserController extends Controller
      * @param $userId
      * @return JsonResponse
      */
+    public function getUserById($userId)
+    {
+        return $this->_manageUserService->getUserById($userId);
+    }
+
+    /**
+     * @param $userId
+     * @return JsonResponse
+     */
     public function toggleUserStatus($userId)
     {
         return $this->_manageUserService->toggleUser($userId);
