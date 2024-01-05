@@ -110,19 +110,20 @@ class JournalEntryService
     public function retrieveJournalEntries($queryParams): JsonResponse
     {
         try {
+            Log::info($queryParams);
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
-            if ($queryParams['fetch'] == "all"){
+            if ($queryParams['fetch'] == "all") {
                 $query = $user->journalEntries()
                     ->with(['pets', 'journalAttachments'])
                     ->orderBy('created_at', 'desc');
-            }else{
+            } else {
                 $query = $user->journalEntries()
                     ->orderBy('created_at', 'desc');
             }
 
             $this->applyFilters($query, $queryParams);
             $journalEntries = $query->get();
-
+            Log::info($journalEntries);
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 JournalEntryResource::collection($journalEntries),
                 'Journal entries retrieved successfully',
@@ -347,7 +348,7 @@ class JournalEntryService
                 $journalAttachment->journal_entry_id = $journalEntry->id;
                 $journalAttachment->type = "image";
 
-                $constructName = AppConstants::$appName.'-'.$counter. '-journal-entry-' . $journalEntry->title . '-' . Carbon::now() . '.' . $file->extension();
+                $constructName = AppConstants::$appName . '-' . $counter . '-journal-entry-' . $journalEntry->title . '-' . Carbon::now() . '.' . $file->extension();
                 $imageName = Str::lower(str_replace(' ', '-', $constructName));
                 $file->move(public_path('images/journal_uploads'), $imageName);
                 $sourceUrl = url('images/journal_uploads/' . $imageName);
@@ -374,7 +375,7 @@ class JournalEntryService
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['message' => $fileCount . 'files uploaded successfully'],
-                $fileCount.' files uploaded successfully',
+                $fileCount . ' files uploaded successfully',
                 200
             );
         } catch (ModelNotFoundException $e) {
