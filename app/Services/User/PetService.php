@@ -11,6 +11,7 @@ use App\Utils\Constants\AppConstants;
 use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
@@ -323,7 +324,7 @@ class PetService
         $petTraits = $pet->petTraits()->orderBy('created_at', 'desc')->get();
         return ResponseHelpers::ConvertToJsonResponseWrapper(
             PetTraitResource::collection($petTraits),
-            'Success',
+            'Fetched pet traits successfully',
             200
         );
     }
@@ -370,7 +371,7 @@ class PetService
                 'Pet traits created successfully',
                 200
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error during pet trait creation',
