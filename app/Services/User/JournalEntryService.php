@@ -123,7 +123,7 @@ class JournalEntryService
 
             $this->applyFilters($query, $queryParams);
             $journalEntries = $query->get();
-            Log::info($journalEntries);
+
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 JournalEntryResource::collection($journalEntries),
                 'Journal entries retrieved successfully',
