@@ -10,6 +10,8 @@ use App\Http\Requests\EditPetRequest;
 use App\Http\Requests\EditPetTraitRequest;
 use App\Services\User\PetService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PetController extends Controller
 {
@@ -30,6 +32,7 @@ class PetController extends Controller
      */
     public function createPet(CreatePetRequest $createPetRequest): JsonResponse
     {
+        Log::info($createPetRequest);
         return $this->_petService->createPetProfile($createPetRequest);
     }
 
@@ -66,7 +69,7 @@ class PetController extends Controller
      */
     public function editPetProfilePicture(EditPetProfilePictureRequest $editRequest): JsonResponse
     {
-        return $this->_petService->updatePetProfilePicture($editRequest->validated());
+        return $this->_petService->updatePetProfilePicture($editRequest);
     }
 
     /**
@@ -86,7 +89,7 @@ class PetController extends Controller
      */
     public function editPetTrait(EditPetTraitRequest $editPetTraitRequest, $petId,$petTraitId): JsonResponse
     {
-        return $this->_petService->updatePetTrait($editPetTraitRequest->validated(),$petId,$petTraitId);
+        return $this->_petService->updatePetTrait($editPetTraitRequest,$petId,$petTraitId);
     }
 
     /**

@@ -27,7 +27,6 @@ class EditPetProfilePictureRequest extends FormRequest
     {
         return [
             'pet_id' => 'required|integer',
-            'profile_picture' => 'required',
         ];
     }
 

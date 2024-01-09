@@ -11,6 +11,7 @@ use App\Utils\Enums\SubscriptionStatus;
 use App\Utils\Helpers\AuthHelpers;
 use App\Utils\Helpers\DatetimeHelpers;
 use App\Utils\Helpers\ResponseHelpers;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -69,14 +70,14 @@ class PaymentsService
                 DispatchEmailNotificationsJob::dispatch($details);
             }
 
-            $tokenResource = AuthHelpers::getUserTokenResource($user);
+            $tokenResource = AuthHelpers::getUserTokenResource($user, 0);
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 $tokenResource,
                 "Payment created successfully",
                 200
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],

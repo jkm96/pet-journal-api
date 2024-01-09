@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class PetService
@@ -58,7 +59,7 @@ class PetService
                 "Pet profile created successfully",
                 200
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             if ($e->getCode() === '23000') {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
@@ -178,6 +179,7 @@ class PetService
     public function updatePetProfilePicture($updateRequest): JsonResponse
     {
         try {
+            Log::info($updateRequest);
             $user = auth()->user();
             $pet = Pet::findOrFail($updateRequest['pet_id']);
 
@@ -189,25 +191,25 @@ class PetService
                 );
             }
 
-            if ($updateRequest['profile_picture']) {
-                $oldProfilePicture = $pet->profile_url;
-                $profileUrl = $this->getPetProfileUrl($updateRequest['profile_picture'], $pet->name);
-                $pet->profile_url = $profileUrl;
-                $pet->update();
-
-                ModelCrudHelpers::deleteImageFromStorage($oldProfilePicture);
-
+            if (!$updateRequest['profile_picture']){
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
-                    $pet->profile_url,
-                    'Profile picture updated successfully',
-                    200
+                    ['error'=>"Pet profile picture is required"],
+                    "Pet profile picture is required",
+                    400
                 );
             }
 
+            $oldProfilePicture = $pet->profile_url;
+            $profileUrl = $this->getPetProfileUrl($updateRequest['profile_picture'], $pet->name);
+            $pet->profile_url = $profileUrl;
+            $pet->update();
+
+            ModelCrudHelpers::deleteImageFromStorage($oldProfilePicture);
+
             return ResponseHelpers::ConvertToJsonResponseWrapper(
-                ['error' => 'The request did not contain any profile picture'],
-                'No profile picture found',
-                400
+                $pet->profile_url,
+                'Profile picture updated successfully',
+                200
             );
         } catch (ModelNotFoundException $e) {
             return ModelCrudHelpers::itemNotFoundError($e);

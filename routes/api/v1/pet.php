@@ -9,7 +9,7 @@ Route::group(['prefix' => 'v1/pet', 'namespace' => 'api/v1', 'middleware' => 'ap
         Route::post('create', [PetController::class, 'createPet']);
         Route::put('{petId}/edit', [PetController::class, 'editPetProfile']);
         Route::get('{slug}/profile', [PetController::class, 'getPetProfileBySlug']);
-        Route::post('edit-profile-picture', [PetController::class, 'editPetProfilePicture']);
+        Route::post('profile/edit-picture', [PetController::class, 'editPetProfilePicture']);
         Route::delete('{petId}/delete', [PetController::class, 'deletePetProfile']);
     });
 });
