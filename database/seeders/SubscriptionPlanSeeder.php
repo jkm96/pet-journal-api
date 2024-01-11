@@ -19,6 +19,9 @@ class SubscriptionPlanSeeder extends Seeder
                 'price' => 4.00,
                 'billing_cycle' => 'monthly',
             ]);
+            $this->command->info('Subscription plan created successfully!');
+        } else {
+            $this->command->info('Subscription plan already exists, skipping creation.');
         }
     }
 }

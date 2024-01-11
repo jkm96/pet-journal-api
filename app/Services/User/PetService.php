@@ -146,7 +146,8 @@ class PetService
             $pet->species = $request['species'];
             $pet->breed = $request['breed'];
             $pet->description = $request['description'];
-            $pet->date_of_birth = $request['date_of_birth'];
+            if ($request['date_of_birth'])
+                $pet->date_of_birth = $request['date_of_birth'];
             $pet->update();
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
