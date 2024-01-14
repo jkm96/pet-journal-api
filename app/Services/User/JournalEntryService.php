@@ -115,7 +115,7 @@ class JournalEntryService
             if ($queryParams['fetch'] == "all") {
                 $query = $user->journalEntries()
                     ->with(['pets', 'journalAttachments'])
-                    ->orderBy('created_at', 'desc');
+                    ->orderBy('created_at', 'asc');
             } else {
                 $query = $user->journalEntries()
                     ->orderBy('created_at', 'desc');
