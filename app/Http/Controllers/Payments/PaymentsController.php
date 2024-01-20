@@ -27,4 +27,9 @@ class PaymentsController extends Controller
     {
         return $this->_paymentsService->createUserPayment($createPaymentRequest);
     }
+
+    public function getUserPayments(): JsonResponse
+    {
+        return $this->_paymentsService->getUserPayments();
+    }
 }

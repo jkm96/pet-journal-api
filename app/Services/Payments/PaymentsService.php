@@ -87,10 +87,22 @@ class PaymentsService
         }
     }
 
+    /**
+     * @param $username
+     * @return string
+     */
     private function generateUniqueInvoice($username)
     {
         $firstLetter = substr($username, 0, 1);
         $lastLetter = substr($username, -1);
-        return 'PDINV'.strtoupper($firstLetter . $lastLetter) . Carbon::now()->format('dmyHis');
+        return 'PDINV' . strtoupper($firstLetter . $lastLetter) . Carbon::now()->format('dmyHis');
+    }
+
+    public function getUserPayments()
+    {
+//        Price
+//Type
+//Status
+//Creation Date
     }
 }

@@ -6,6 +6,7 @@ use App\Mail\PaymentCheckoutConfirmationMail;
 use App\Mail\PaymentCheckoutReceiptMail;
 use App\Mail\UserVerificationMail;
 use App\Utils\Enums\EmailTypes;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,22 +19,46 @@ class DispatchEmailNotificationsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $jodPayload;
+    public $jobPayload;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($jodPayload)
+    public function __construct($jobPayload)
     {
-        $this->jodPayload = $jodPayload;
+        $this->jobPayload = $jobPayload;
     }
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 5;
+
+    /**
+     * The maximum number of unhandled exceptions to allow before failing.
+     *
+     * @var int
+     */
+    public $maxExceptions = 3;
+
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 120;
 
     /**
      * Execute the job.
      */
-    public function handle($emailData): void
+    public function handle(): void
     {
+        $emailData = $this->jobPayload;
         try {
+            Log::info($emailData);
+            Log::info("Email type ".$emailData['type']);
             $email = null;
             switch ($emailData['type']) {
                 case EmailTypes::USER_VERIFICATION->name:
@@ -46,8 +71,9 @@ class DispatchEmailNotificationsJob implements ShouldQueue
                     $email = new PaymentCheckoutConfirmationMail($emailData);
                     break;
             }
+            Log::info("sent email to ".$emailData['recipientEmail']);
             Mail::to($emailData['recipientEmail'])->send($email);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error sending email: ' . $e->getMessage());
         }
     }

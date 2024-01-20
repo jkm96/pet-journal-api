@@ -2,6 +2,7 @@
 
 namespace App\Services\User;
 
+use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\Permission;
 use App\Models\User;
 use App\Models\UserVerification;
@@ -15,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AuthUserService
@@ -62,7 +64,7 @@ class AuthUserService
                 'verificationUrl' => trim($verificationUrl),
             ];
 
-//            DispatchEmailNotificationsJob::dispatch($details);
+            DispatchEmailNotificationsJob::dispatch($details);
 
             $tokenResource = AuthHelpers::getUserTokenResource($user, 0);
             return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "Registered successfully'", 200);
@@ -80,10 +82,17 @@ class AuthUserService
     public function verifyUserEmail($verificationRequest): JsonResponse
     {
         $userVerify = UserVerification::where('token', $verificationRequest->token)->first();
-        $message = 'Email cannot be recognized';
+        $message = 'Verification token has expired.';
 
         if (!is_null($userVerify)) {
             $user = $userVerify->user;
+            Log::info(json_encode($user));
+
+            $expirationDate = Carbon::parse($userVerify->created_at)->addDays(7);
+            if (Carbon::now()->gt($expirationDate)) {
+                $userVerify->delete();
+                return ResponseHelpers::ConvertToJsonResponseWrapper([], $message, 400);
+            }
 
             if (!$user->is_email_verified) {
                 $userVerify->user->is_email_verified = 1;

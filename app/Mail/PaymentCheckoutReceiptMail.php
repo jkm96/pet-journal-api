@@ -40,7 +40,7 @@ class PaymentCheckoutReceiptMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.payment.checkout.receipt',
+            view: 'mail.payment_checkout_receipt',
             with: [
                 'username' => $this->details['username'],
             ],

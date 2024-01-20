@@ -38,7 +38,7 @@ class PaymentCheckoutConfirmationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.payment.checkout.confirmation',
+            view: 'mail.payment_checkout_confirmation',
             with: [
                 'username' => $this->details['username'],
                 'invoice' => $this->details['invoice'],
