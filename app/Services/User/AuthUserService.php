@@ -26,7 +26,7 @@ class AuthUserService
      * @param $origin
      * @return JsonResponse
      */
-    public function registerUser($request, $origin): JsonResponse
+    public function registerUser($request): JsonResponse
     {
         try {
             DB::beginTransaction();
@@ -48,8 +48,7 @@ class AuthUserService
 
             //send email verification message
             $token = Str::random(70);
-            $verificationUrl = $origin . 'auth/verify-user?token=' . $token;
-
+            $verificationUrl = env('PET_DIARIES_FRONTEND_URL'). '/auth/verify-user?token=' . $token;
             UserVerification::create([
                 'user_id' => $user->id,
                 'token' => $token

@@ -30,8 +30,7 @@ class AuthUserController extends Controller
      */
     public function registerUser(UserRegistrationRequest $request): JsonResponse
     {
-       $origin = 'http://localhost:3000/';
-        return $this->_userService->registerUser($request, $origin);
+        return $this->_userService->registerUser($request);
     }
 
     /**
