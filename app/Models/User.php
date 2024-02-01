@@ -31,6 +31,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the magic studio projects for the user.
+     */
+    public function magicStudioProjects()
+    {
+        return $this->hasMany(MagicStudioProject::class);
+    }
+
+    /**
      * Get the subscription for the user.
      */
     public function user_subscription()

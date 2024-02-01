@@ -110,7 +110,6 @@ class JournalEntryService
     public function retrieveJournalEntries($queryParams): JsonResponse
     {
         try {
-            Log::info($queryParams);
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
             if ($queryParams['fetch'] == "all") {
                 $query = $user->journalEntries()

@@ -23,7 +23,6 @@ class AuthUserService
 {
     /**
      * @param $request
-     * @param $origin
      * @return JsonResponse
      */
     public function registerUser($request): JsonResponse
