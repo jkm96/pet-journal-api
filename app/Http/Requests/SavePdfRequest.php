@@ -8,7 +8,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CreateProjectRequest extends FormRequest
+class SavePdfRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,10 +26,8 @@ class CreateProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string',
-            'content' => 'required|string',
-            'period_from' => 'nullable|string',
-            'period_to' => 'nullable|string',
+            'project_id' => 'required',
+            'pdf_content' => 'required',
         ];
     }
 
@@ -41,7 +39,7 @@ class CreateProjectRequest extends FormRequest
     {
         throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
             $validator->errors(),
-            "Project creation failed due to validation errors",
+            "Saving project details failed due to validation errors",
             422
         ));
     }

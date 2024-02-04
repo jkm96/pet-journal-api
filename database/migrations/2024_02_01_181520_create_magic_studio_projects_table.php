@@ -14,10 +14,14 @@ return new class extends Migration
         Schema::create('magic_studio_projects', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id');
+            $table->string('slug');
             $table->string('title');
+            $table->longText('content');
             $table->date('period_from');
             $table->date('period_to');
             $table->timestamps();
+
+            $table->unique(['id', 'slug']);
         });
     }
 

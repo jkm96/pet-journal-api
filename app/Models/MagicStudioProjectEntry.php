@@ -10,7 +10,7 @@ class MagicStudioProjectEntry extends Model
     use HasFactory;
     protected $fillable = [
         'magic_studio_project_id',
-        'content',
+        'journal_entry_ids',
     ];
 
 

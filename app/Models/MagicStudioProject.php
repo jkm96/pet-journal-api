@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class MagicStudioProject extends Model
 {
@@ -12,6 +13,7 @@ class MagicStudioProject extends Model
     protected $fillable = [
         'user_id',
         'title',
+        'content',
         'period_from',
         'period_to',
     ];
@@ -30,5 +32,22 @@ class MagicStudioProject extends Model
     public function magicStudioProjectEntries()
     {
         return $this->hasMany(MagicStudioProjectEntry::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($project) {
+            $slug = Str::slug($project->title);
+            $uniqueSlug = $slug;
+
+            $counter = 1;
+            while (static::where('slug', $uniqueSlug)->exists()) {
+                $uniqueSlug = $slug . '-' . $counter;
+                $counter++;
+            }
+            $project->slug = $uniqueSlug;
+        });
     }
 }

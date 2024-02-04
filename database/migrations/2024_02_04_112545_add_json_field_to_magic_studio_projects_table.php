@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('magic_studio_project_entries', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('magic_studio_project_id');
-            $table->string('journal_entry_ids');
-            $table->timestamps();
+        Schema::table('magic_studio_projects', function (Blueprint $table) {
+            $table->json("pdf_content");
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('magic_studio_project_entries');
+        Schema::table('magic_studio_projects', function (Blueprint $table) {
+            $table->dropColumn("pdf_content");
+        });
     }
 };
