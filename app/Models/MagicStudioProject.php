@@ -14,6 +14,7 @@ class MagicStudioProject extends Model
         'user_id',
         'title',
         'content',
+        'pdf_content',
         'period_from',
         'period_to',
     ];

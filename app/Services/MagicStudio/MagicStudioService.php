@@ -105,10 +105,8 @@ class MagicStudioService
     public function getProjectWithEntries($projectSlug)
     {
         try {
-            // Find the MagicStudioProject
             $project = MagicStudioProject::where('slug',$projectSlug)->firstOrFail();
 
-            // Find associated journal entry IDs from MagicStudioProjectEntry
             $projectEntry = MagicStudioProjectEntry::where('magic_studio_project_id', $project->id)->first();
 
             if (!$projectEntry) {
@@ -120,11 +118,10 @@ class MagicStudioService
             }
 
             $journalEntryIds = explode(',', $projectEntry->journal_entry_ids);
+            $journalEntries = JournalEntry::whereIn('id', $journalEntryIds)
+                ->with(['pets','journalAttachments'])
+                ->get();
 
-            // Fetch the associated journal entries
-            $journalEntries = JournalEntry::whereIn('id', $journalEntryIds)->with([ 'journalAttachments'])->get();
-
-            // Combine the project and its associated journal entries
             $result = [
                 'project' => new MagicProjectResource($project),
                 'project_entries' => JournalEntryResource::collection($journalEntries),
@@ -154,11 +151,11 @@ class MagicStudioService
     {
         try {
             $project = MagicStudioProject::findOrFail($savePdfRequest['project_id']);
-            $project->pdf_content = $savePdfRequest['pdf_content'];
+            $project->content = $savePdfRequest['pdf_content'];
             $project->update();
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
-                ['pdfUrl' => $project->pdf_content],
+                ['pdf_content' => $project->content],
                 'Project pdf saved successfully',
                 200
             );
