@@ -27,7 +27,7 @@ class CreateProjectRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'content' => 'required|string',
+            'pdf_content' => 'required|string',
             'period_from' => 'nullable|string',
             'period_to' => 'nullable|string',
         ];

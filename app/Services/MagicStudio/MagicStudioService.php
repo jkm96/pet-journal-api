@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MagicStudioService
 {
@@ -68,7 +69,6 @@ class MagicStudioService
                 $project = MagicStudioProject::create([
                     'user_id' => $user->id,
                     'title' => $createRequest['title'],
-                    'content' => $createRequest['content'],
                     'pdf_content' => $createRequest['content'],
                     'period_from' => Carbon::parse($periodFrom),
                     'period_to' => Carbon::parse($periodTo),
@@ -88,6 +88,7 @@ class MagicStudioService
                 );
             } catch (Exception $e) {
                 DB::rollBack();
+                Log::error("Error creating project ".$e->getMessage());
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     ['error' => $e->getMessage()],
                     'Error creating project',
