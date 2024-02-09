@@ -70,7 +70,7 @@ class MagicStudioService
                 $project = MagicStudioProject::create([
                     'user_id' => $user->id,
                     'title' => $createRequest['title'],
-                    'pdf_content' => $createRequest['content'],
+                    'pdf_content' => $createRequest['pdf_content'],
                     'period_from' => Carbon::parse($periodFrom),
                     'period_to' => Carbon::parse($periodTo),
                 ]);
@@ -138,6 +138,7 @@ class MagicStudioService
         } catch (ModelNotFoundException $e) {
             return ModelCrudHelpers::itemNotFoundError($e);
         } catch (Exception $e) {
+            Log::error("Error fetching a single project ".$e->getMessage());
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error fetching project',
