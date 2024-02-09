@@ -69,6 +69,7 @@ class MagicStudioService
                     'user_id' => $user->id,
                     'title' => $createRequest['title'],
                     'content' => $createRequest['content'],
+                    'pdf_content' => $createRequest['content'],
                     'period_from' => Carbon::parse($periodFrom),
                     'period_to' => Carbon::parse($periodTo),
                 ]);
