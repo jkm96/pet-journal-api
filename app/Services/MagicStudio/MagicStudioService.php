@@ -36,7 +36,6 @@ class MagicStudioService
                 200
             );
         } catch (Exception $e) {
-            Log::error("Error fetching projects ".$e->getMessage());
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error fetching projects',
@@ -89,7 +88,6 @@ class MagicStudioService
                 );
             } catch (Exception $e) {
                 DB::rollBack();
-                Log::error("Error creating project ".$e->getMessage());
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     ['error' => $e->getMessage()],
                     'Error creating project',
@@ -138,7 +136,6 @@ class MagicStudioService
         } catch (ModelNotFoundException $e) {
             return ModelCrudHelpers::itemNotFoundError($e);
         } catch (Exception $e) {
-            Log::error("Error fetching a single project ".$e->getMessage());
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error fetching project',
