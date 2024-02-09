@@ -36,6 +36,7 @@ class MagicStudioService
                 200
             );
         } catch (Exception $e) {
+            Log::error("Error fetching projects ".$e->getMessage());
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error fetching projects',
