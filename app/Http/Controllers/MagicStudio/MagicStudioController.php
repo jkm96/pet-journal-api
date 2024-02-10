@@ -4,6 +4,7 @@ namespace App\Http\Controllers\MagicStudio;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateProjectRequest;
+use App\Http\Requests\FetchMagicProjectsRequest;
 use App\Http\Requests\SavePdfRequest;
 use App\Services\MagicStudio\MagicStudioService;
 use Illuminate\Http\JsonResponse;
@@ -25,8 +26,8 @@ class MagicStudioController extends Controller
     /**
      * @return JsonResponse
      */
-    public function getProjects(){
-        return $this->_magicStudioService->getAllProjects();
+    public function getProjects(FetchMagicProjectsRequest $projectsRequest){
+        return $this->_magicStudioService->getAllProjects($projectsRequest);
     }
 
     /**

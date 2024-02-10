@@ -25,10 +25,11 @@ class MagicStudioService
     /**
      * @return JsonResponse
      */
-    public function getAllProjects()
+    public function getAllProjects($projectsRequest)
     {
         try {
-            $projects = MagicStudioProject::all();
+            $user = User::findOrFail(auth()->user()->getAuthIdentifier());
+            $projects = $user->magicStudioProjects()->get();
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 MagicProjectResource::collection($projects),
