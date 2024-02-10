@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1/magic-studio', 'namespace' => 'api/v1', 'middleware' => 'api'], function () {
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('', [MagicStudioController::class, 'getProjects']);
+        Route::get('list', [MagicStudioController::class, 'getProjects']);
         Route::get('{projectSlug}', [MagicStudioController::class, 'getProjectById']);
         Route::post('', [MagicStudioController::class, 'createMagicProject']);
         Route::post('save-pdf', [MagicStudioController::class, 'saveProjectPdf']);
