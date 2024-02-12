@@ -64,37 +64,45 @@ class MagicStudioService
             $this->applyDateFilters($query, $periodFrom, $periodTo);
             $journalEntryIds = $query->pluck('id')->toArray();
 
-            DB::beginTransaction();
+            if (count($journalEntryIds) > 0) {
+                DB::beginTransaction();
 
-            try {
-                $project = MagicStudioProject::create([
-                    'user_id' => $user->id,
-                    'title' => $createRequest['title'],
-                    'pdf_content' => $createRequest['pdf_content'],
-                    'period_from' => Carbon::parse($periodFrom),
-                    'period_to' => Carbon::parse($periodTo),
-                ]);
+                try {
+                    $project = MagicStudioProject::create([
+                        'user_id' => $user->id,
+                        'title' => $createRequest['title'],
+                        'pdf_content' => $createRequest['pdf_content'],
+                        'period_from' => Carbon::parse($periodFrom),
+                        'period_to' => Carbon::parse($periodTo),
+                    ]);
 
-                MagicStudioProjectEntry::create([
-                    'magic_studio_project_id' => $project->id,
-                    'journal_entry_ids' => implode(',', $journalEntryIds),
-                ]);
+                    MagicStudioProjectEntry::create([
+                        'magic_studio_project_id' => $project->id,
+                        'journal_entry_ids' => implode(',', $journalEntryIds),
+                    ]);
 
-                DB::commit();
+                    DB::commit();
 
-                return ResponseHelpers::ConvertToJsonResponseWrapper(
-                    ['project_id' => $project->id],
-                    'Project created successfully',
-                    200
-                );
-            } catch (Exception $e) {
-                DB::rollBack();
-                return ResponseHelpers::ConvertToJsonResponseWrapper(
-                    ['error' => $e->getMessage()],
-                    'Error creating project',
-                    500
-                );
+                    return ResponseHelpers::ConvertToJsonResponseWrapper(
+                        ['project_id' => $project->id],
+                        'Project created successfully',
+                        200
+                    );
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    return ResponseHelpers::ConvertToJsonResponseWrapper(
+                        ['error' => $e->getMessage()],
+                        'Error creating project',
+                        500
+                    );
+                }
             }
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                [],
+                'Error creating project. Please select a time range that has diary entries',
+                400
+            );
+
         } catch (ModelNotFoundException $e) {
             return ModelCrudHelpers::itemNotFoundError($e);
         }
@@ -107,9 +115,11 @@ class MagicStudioService
     public function getProjectWithEntries($projectSlug)
     {
         try {
-            $project = MagicStudioProject::where('slug',$projectSlug)->firstOrFail();
+            $project = MagicStudioProject::where('slug', $projectSlug)
+                ->firstOrFail();
 
-            $projectEntry = MagicStudioProjectEntry::where('magic_studio_project_id', $project->id)->first();
+            $projectEntry = MagicStudioProjectEntry::where('magic_studio_project_id', $project->id)
+                ->first();
 
             if (!$projectEntry) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
@@ -121,7 +131,7 @@ class MagicStudioService
 
             $journalEntryIds = explode(',', $projectEntry->journal_entry_ids);
             $journalEntries = JournalEntry::whereIn('id', $journalEntryIds)
-                ->with(['pets','journalAttachments'])
+                ->with(['pets', 'journalAttachments'])
                 ->get();
 
             $result = [
@@ -172,4 +182,37 @@ class MagicStudioService
         }
     }
 
+    /**
+     * @param $projectId
+     * @return JsonResponse
+     */
+    public function removeMagicProject($projectId): JsonResponse
+    {
+        try {
+            $userId = auth()->user()->getAuthIdentifier();
+            $user = User::findOrFail($userId);
+            $project = $user->magicStudioProjects()->findOrFail($projectId);
+            if ($project->magicStudioProjectEntries()) {
+                foreach ($project->magicStudioProjectEntries() as $projectEntry) {
+                    $projectEntry->delete();
+                }
+            }
+            $project->delete();
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ["project_title" => $project->title],
+                'Project deleted successfully',
+                200
+            );
+
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error deleting journal entry',
+                500
+            );
+        }
+    }
 }

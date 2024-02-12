@@ -55,4 +55,13 @@ class MagicStudioController extends Controller
     {
         return $this->_magicStudioService->createProject($createProjectRequest);
     }
+
+    /**
+     * @param $projectId
+     * @return JsonResponse
+     */
+    public function deleteProject($projectId): JsonResponse
+    {
+        return $this->_magicStudioService->removeMagicProject($projectId);
+    }
 }
