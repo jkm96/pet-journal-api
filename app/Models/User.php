@@ -20,6 +20,7 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'profile_url',
     ];
 
     /**
@@ -41,7 +42,7 @@ class User extends Authenticatable
     /**
      * Get the subscription for the user.
      */
-    public function user_subscription()
+    public function userSubscriptions()
     {
         return $this->hasOne(UserSubscription::class);
     }

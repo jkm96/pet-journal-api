@@ -14,6 +14,7 @@ class UserSubscription extends Model
         'subscription_plan_id',
         'start_date',
         'end_date',
+        'invoice',
         'status',
         'stripe_session_id',
         'stripe_subscription',

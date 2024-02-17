@@ -428,8 +428,8 @@ class PetService
     {
         $constructName = AppConstants::$appName . '-' . $petName . '-' . Carbon::now() . '.' . $image->extension();
         $imageName = Str::lower(str_replace(' ', '-', $constructName));
-        $image->move(public_path('images/profile_pictures'), $imageName);
+        $image->move(public_path('images/pet_profiles'), $imageName);
 
-        return url('images/profile_pictures/' . $imageName);
+        return url('images/pet_profiles/' . $imageName);
     }
 }

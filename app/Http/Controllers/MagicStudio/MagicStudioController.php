@@ -8,7 +8,6 @@ use App\Http\Requests\FetchMagicProjectsRequest;
 use App\Http\Requests\SavePdfRequest;
 use App\Services\MagicStudio\MagicStudioService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class MagicStudioController extends Controller

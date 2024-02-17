@@ -6,6 +6,7 @@ use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\Permission;
 use App\Models\User;
 use App\Models\UserVerification;
+use App\Utils\Constants\AppConstants;
 use App\Utils\Enums\EmailTypes;
 use App\Utils\Enums\PetJournalPermission;
 use App\Utils\Helpers\AuthHelpers;
@@ -29,11 +30,15 @@ class AuthUserService
     {
         try {
             DB::beginTransaction();
+            $userAvatarUrl = $this->createUserAvatarFromName(trim($request['username']), true);
+            $profileCoverUrl = $this->createUserAvatarFromName(trim($request['username']), false);
 
             $user = User::create([
                 'username' => $request['username'],
                 'email' => $request['email'],
                 'password' => Hash::make($request['password']),
+                'profile_url' => $userAvatarUrl,
+                'profile_cover_url' => $profileCoverUrl,
                 'is_active' => 1
             ]);
 
@@ -65,6 +70,7 @@ class AuthUserService
             DispatchEmailNotificationsJob::dispatch($details);
 
             $tokenResource = AuthHelpers::getUserTokenResource($user, 0);
+
             return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "Registered successfully'", 200);
         } catch (Exception $e) {
             DB::rollBack();
@@ -140,5 +146,45 @@ class AuthUserService
         auth()->user()->tokens()->delete();
 
         return ResponseHelpers::ConvertToJsonResponseWrapper([], "logged out successfully", 200);
+    }
+
+    /**
+     * @param $username
+     * @param $isProfilePicture
+     * @return string
+     */
+    private function createUserAvatarFromName($username, $isProfilePicture): string
+    {
+        // Extract first and last letters as initials
+        $name = trim($username);
+        $initials = strtoupper(substr($name, 0, 1));
+        $lastLetterIndex = strlen($name) - 1;
+        if ($lastLetterIndex > 0) {
+            $initials .= strtoupper(substr($name, $lastLetterIndex, 1)); // Last letter
+        }
+
+        // Define a background color and text color for the avatar
+        $bgColor = '#'.substr(md5($name), 0, 6); // Use a unique color based on the name
+        $textColor = '#ffffff';
+
+        // Create an image with the initials and colors
+        $image = $isProfilePicture ? imagecreatetruecolor(200, 200) : imagecreatetruecolor(970, 260);
+        $bg = imagecolorallocate($image, hexdec(substr($bgColor, 1, 2)), hexdec(substr($bgColor, 3, 2)), hexdec(substr($bgColor, 5, 2)));
+        $text = imagecolorallocate($image, hexdec(substr($textColor, 1, 2)), hexdec(substr($textColor, 3, 2)), hexdec(substr($textColor, 5, 2)));
+        imagefill($image, 0, 0, $bg);
+        $font = public_path('fonts/robotoregular.ttf');
+        imagettftext($image, 75, 0, 25, 130, $text, $font, $initials);
+
+        // Save the image to a file
+        $constructName = AppConstants::$appName . '-' . $username . '-' . Carbon::now() . '.png';
+        $imageName = Str::lower(str_replace(' ', '-', $constructName));
+        $directoryPath = $isProfilePicture ? 'images/user_profile_covers/' : 'images/user_profile_avatars/';
+        if (!file_exists(public_path($directoryPath))) {
+            mkdir($directoryPath, 0777, true);
+        }
+        imagepng($image, public_path($directoryPath . $imageName));
+        imagedestroy($image);
+
+        return url($directoryPath . $imageName);
     }
 }

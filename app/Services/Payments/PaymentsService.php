@@ -2,16 +2,20 @@
 
 namespace App\Services\Payments;
 
+use App\Http\Resources\UserSubscriptionResource;
 use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\SubscriptionPlan;
+use App\Models\User;
 use App\Models\UserSubscription;
 use App\Models\UserSubscriptionPayment;
 use App\Utils\Enums\EmailTypes;
 use App\Utils\Enums\SubscriptionStatus;
 use App\Utils\Helpers\AuthHelpers;
 use App\Utils\Helpers\DatetimeHelpers;
+use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +31,7 @@ class PaymentsService
         $user = auth()->user();
         $subscription = SubscriptionPlan::firstOrFail();
         $uniqueInvoice = $this->generateUniqueInvoice($user->username);
+
         DB::beginTransaction();
 
         try {
@@ -95,14 +100,40 @@ class PaymentsService
     {
         $firstLetter = substr($username, 0, 1);
         $lastLetter = substr($username, -1);
-        return 'PDINV' . strtoupper($firstLetter . $lastLetter) . Carbon::now()->format('dmyHis');
+        return 'PDINV' . strtoupper($firstLetter . $lastLetter) . Carbon::now()->format('dmYHis');
     }
 
-    public function getUserPayments()
+    public function getUserPayments($email)
     {
-//        Price
-//Type
-//Status
-//Creation Date
+        try {
+            $user = User::where('email', trim($email))->firstOrFail();
+            if ($user->id != auth()->user()->getAuthIdentifier()) {
+                return ResponseHelpers::ConvertToJsonResponseWrapper(
+                    ['error' => 'Restricted content'],
+                    'Error retrieving billing details',
+                    401
+                );
+            }
+
+            $userSubscriptions = $user->userSubscriptions()
+                ->with(['subscriptionPlan'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                UserSubscriptionResource::collection($userSubscriptions),
+                'Billing info retrieved successfully',
+                200
+            );
+
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error retrieving billing details',
+                500
+            );
+        }
     }
 }
