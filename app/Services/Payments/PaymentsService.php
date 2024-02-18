@@ -100,7 +100,7 @@ class PaymentsService
     {
         $firstLetter = substr($username, 0, 1);
         $lastLetter = substr($username, -1);
-        return 'PDINV' . strtoupper($firstLetter . $lastLetter) . Carbon::now()->format('dmYHis');
+        return 'PDI' . Carbon::now()->format('dmYHi') . strtoupper($firstLetter . $lastLetter);
     }
 
     public function getUserPayments($email)
