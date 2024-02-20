@@ -178,7 +178,7 @@ class AuthUserService
         // Save the image to a file
         $constructName = AppConstants::$appName . '-' . $username . '-' . Carbon::now() . '.png';
         $imageName = Str::lower(str_replace(' ', '-', $constructName));
-        $directoryPath = $isProfilePicture ? 'images/user_profile_covers/' : 'images/user_profile_avatars/';
+        $directoryPath = $isProfilePicture ? 'images/user_profile_avatars/' : 'images/user_profile_covers/';
         if (!file_exists(public_path($directoryPath))) {
             mkdir($directoryPath, 0777, true);
         }
