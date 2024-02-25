@@ -44,7 +44,6 @@ class MagicStudioService
         }
     }
 
-
     /**
      * @param $createRequest
      * @return JsonResponse

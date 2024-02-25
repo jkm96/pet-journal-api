@@ -162,18 +162,31 @@ class AuthUserService
         if ($lastLetterIndex > 0) {
             $initials .= strtoupper(substr($name, $lastLetterIndex, 1)); // Last letter
         }
+        $nameToWrite = $isProfilePicture ? $initials : $name;
 
         // Define a background color and text color for the avatar
-        $bgColor = '#'.substr(md5($name), 0, 6); // Use a unique color based on the name
+        $bgColor = '#' . str_pad(substr(md5($name), 0, 6), 6, '0'); // Use a unique color based on the name
         $textColor = '#ffffff';
 
+        // Determine image dimensions based on whether it's a profile picture or not
+        $imageWidth = $isProfilePicture ? 200 : 970;
+        $imageHeight = $isProfilePicture ? 200 : 260;
+
         // Create an image with the initials and colors
-        $image = $isProfilePicture ? imagecreatetruecolor(200, 200) : imagecreatetruecolor(970, 260);
+        $image = imagecreatetruecolor($imageWidth, $imageHeight);
         $bg = imagecolorallocate($image, hexdec(substr($bgColor, 1, 2)), hexdec(substr($bgColor, 3, 2)), hexdec(substr($bgColor, 5, 2)));
         $text = imagecolorallocate($image, hexdec(substr($textColor, 1, 2)), hexdec(substr($textColor, 3, 2)), hexdec(substr($textColor, 5, 2)));
         imagefill($image, 0, 0, $bg);
         $font = public_path('fonts/robotoregular.ttf');
-        imagettftext($image, 75, 0, 25, 130, $text, $font, $initials);
+
+        // Adjust text position based on whether it's a profile picture or not
+        $textBoundingBox = imagettfbbox(75, 0, $font, $nameToWrite);
+        $textWidth = $textBoundingBox[4] - $textBoundingBox[0];
+        $textHeight = $textBoundingBox[1] - $textBoundingBox[7];
+        $textX = $isProfilePicture ? (200 - $textWidth) / 2 : ($imageWidth - $textWidth) / 2;
+        $textY = $isProfilePicture ? (200 + $textHeight) / 2 : ($imageHeight + $textHeight) / 2;
+
+        imagettftext($image, 75, 0, $textX, $textY, $text, $font, $nameToWrite);
 
         // Save the image to a file
         $constructName = AppConstants::$appName . '-' . $username . '-' . Carbon::now() . '.png';

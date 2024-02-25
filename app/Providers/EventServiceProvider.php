@@ -21,6 +21,24 @@ class EventServiceProvider extends ServiceProvider
         'stripe-webhooks::checkout.session.completed' => [
             PaymentCheckoutListener::class,
         ],
+        'stripe-webhooks::checkout.session.async_payment_succeeded' => [
+            PaymentCheckoutListener::class,
+        ],
+        'stripe-webhooks::checkout.session.async_payment_failed' => [
+            PaymentCheckoutListener::class,
+        ],
+        'stripe-webhooks::charge.succeeded' => [
+            PaymentCheckoutListener::class,
+        ],
+        'stripe-webhooks::payment_intent.created' => [
+            PaymentCheckoutListener::class,
+        ],
+        'stripe-webhooks::payment_intent.succeeded' => [
+            PaymentCheckoutListener::class,
+        ],
+        'stripe-webhooks::invoice.payment_succeeded' => [
+            PaymentCheckoutListener::class,
+        ],
     ];
 
     /**

@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_subscription_payments', function (Blueprint $table) {
+        Schema::create('customer_payment_events', function (Blueprint $table) {
             $table->id();
-            $table->string('session_id');
-            $table->dateTime('session_created');
-            $table->dateTime('session_expires_at');
+            $table->string('event_id');
+            $table->string('object_type');
             $table->string('customer');
-            $table->json('customer_details');
-            $table->string('invoice');
-            $table->string('payment_status');
-            $table->string('subscription');
+            $table->string('status');
+            $table->json('event_details');
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_subscription_payments');
+        Schema::dropIfExists('customer_payment_events');
     }
 };

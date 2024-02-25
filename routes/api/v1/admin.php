@@ -12,11 +12,16 @@ Route::group(['prefix' => 'v1/admin', 'namespace' => 'api/v1', 'middleware' => '
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AdminController::class, 'logoutAdmin']);
 
-        Route::get('user', [ManageUserController::class, 'getUsers']);
-        Route::get('user/{userId}', [ManageUserController::class, 'getUserById']);
-        Route::put('user/{userId}/toggle-status', [ManageUserController::class, 'toggleUserStatus']);
-        Route::put('user/{userId}/toggle-subscription', [ManageUserController::class, 'toggleUserSubscriptionStatus']);
+        Route::group(['prefix' => 'manage-users', 'middleware' => 'api'], function () {
+            Route::get('', [ManageUserController::class, 'getUsers']);
+            Route::get('{userId}', [ManageUserController::class, 'getUserById']);
+            Route::put('{userId}/toggle-status', [ManageUserController::class, 'toggleUserStatus']);
+            Route::put('{userId}/toggle-subscription', [ManageUserController::class, 'toggleUserSubscriptionStatus']);
+        });
 
-        Route::get('user-subscriptions', [ManageUserSubscriptionController::class, 'getUserSubscriptions']);
+        Route::group(['prefix' => 'user-subscriptions', 'middleware' => 'api'], function () {
+            Route::post('', [ManageUserSubscriptionController::class, 'createUserSubscription']);
+            Route::get('', [ManageUserSubscriptionController::class, 'getUserSubscriptions']);
+        });
     });
 });

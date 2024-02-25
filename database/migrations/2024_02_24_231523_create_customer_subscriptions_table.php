@@ -5,19 +5,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserSubscriptionsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('user_subscriptions', function (Blueprint $table) {
+        Schema::create('customer_subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->string('customer_id');
+            $table->string('payment_intent_id')->nullable();
             $table->unsignedBigInteger('subscription_plan_id');
+            $table->string('invoice');
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             $table->string('status')->default(SubscriptionStatus::INACTIVE->name);
@@ -27,11 +27,9 @@ class CreateUserSubscriptionsTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('user_subscriptions');
+        Schema::dropIfExists('customer_subscriptions');
     }
-}
+};

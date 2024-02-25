@@ -91,13 +91,9 @@
 
     <p>If you have any questions or need assistance, feel free to reach out. Our team is here to help!</p>
     <p>Wishing you and your pets wonderful moments on Pet Diaries!</p>
-    <h4 class="h4">
-        Kindest regards,<br>
-        The Pet Diaries Team
-    </h4>
 
-    <p class="slogan">Made with love for pet lovers</p>
-    <p class="copyright">&copy; {{ date('Y') }} Pet Diaries. All rights reserved.</p>
+    @include('mail.slogan')
+
 </div>
 </body>
 

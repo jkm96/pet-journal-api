@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\PaymentCheckoutConfirmationMail;
 use App\Mail\PaymentCheckoutReceiptMail;
+use App\Mail\SubscriptionRenewalConfirmationMail;
 use App\Mail\UserVerificationMail;
 use App\Utils\Enums\EmailTypes;
 use Exception;
@@ -69,6 +70,9 @@ class DispatchEmailNotificationsJob implements ShouldQueue
                     break;
                 case EmailTypes::PAYMENT_CHECKOUT_CONFIRMATION->name:
                     $email = new PaymentCheckoutConfirmationMail($emailData);
+                    break;
+                case EmailTypes::SUBSCRIPTION_RENEWAL_CONFIRMATION->name:
+                    $email = new SubscriptionRenewalConfirmationMail($emailData);
                     break;
             }
             Log::info("sent email to ".$emailData['recipientEmail']);

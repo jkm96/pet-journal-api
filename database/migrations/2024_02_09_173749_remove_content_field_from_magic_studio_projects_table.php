@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('magic_studio_projects', function (Blueprint $table) {
             $table->dropColumn("content");
-            $table->text('pdf_content')->nullable()->change();
 
         });
     }
@@ -25,7 +24,6 @@ return new class extends Migration
     {
         Schema::table('magic_studio_projects', function (Blueprint $table) {
             $table->string("content")->nullable();
-            $table->longText("pdf_content");
         });
     }
 };

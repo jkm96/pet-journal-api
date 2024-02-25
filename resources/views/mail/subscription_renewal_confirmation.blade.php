@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Welcome to Pet Diaries | Payment Confirmation</title>
+    <title>Welcome to Pet Diaries | Subscription Renewal Confirmation</title>
     <style>
         /* Reset some Bootstrap styles */
         body, figure, h1, h2, h3, p {
@@ -68,11 +68,9 @@
 <body>
 <div class="container">
     <h4>Hello {{ $username }},</h4>
-    <p>We're delighted to inform you that your payment of $4.00 USD has been successfully processed.</p>
+    <p>We're delighted to inform you that your subscription of $4.00 USD has been successfully renewed.</p>
     <p>Your invoice is: <span style="font-weight: bolder">{{ $invoice }}</span></p>
-    <p>Explore Pet Diaries to create and share delightful moments with your furry friends.
-        If you have any questions or need assistance, our support team is here to help. Simply
-        contact us at <a href="mailto:support@petdiaries.com">support@petdiaries.com</a>.</p>
+    <p>Thank you for being part of the Pet Diaries community.</p>
     <p>Wishing you and your pets wonderful moments on Pet Diaries!</p>
 
     @include('mail.slogan')

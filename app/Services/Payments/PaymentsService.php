@@ -4,21 +4,25 @@ namespace App\Services\Payments;
 
 use App\Http\Resources\UserSubscriptionResource;
 use App\Jobs\DispatchEmailNotificationsJob;
+use App\Models\CustomerPayment;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
-use App\Models\UserSubscription;
-use App\Models\UserSubscriptionPayment;
+use App\Models\CustomerSubscription;
+use App\Models\CustomerPaymentEvent;
 use App\Utils\Enums\EmailTypes;
 use App\Utils\Enums\SubscriptionStatus;
 use App\Utils\Helpers\AuthHelpers;
 use App\Utils\Helpers\DatetimeHelpers;
 use App\Utils\Helpers\ModelCrudHelpers;
+use App\Utils\Helpers\PaymentHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PaymentsService
 {
@@ -29,42 +33,33 @@ class PaymentsService
     public function createUserPayment($createPaymentRequest)
     {
         $user = auth()->user();
-        $subscription = SubscriptionPlan::firstOrFail();
-        $uniqueInvoice = $this->generateUniqueInvoice($user->username);
-
-        DB::beginTransaction();
+        $uniqueInvoice = PaymentHelpers::generateUniqueInvoice($user->username);
+        $customerId = $createPaymentRequest['customer'];
+        $paymentIntentId = $createPaymentRequest['payment_intent'];
 
         try {
-            $startDate = Carbon::now();
-            $endDate = $startDate->copy()->addMonth();
+            DB::beginTransaction();
 
-            UserSubscription::create([
-                'user_id' => $user->getAuthIdentifier(),
-                'invoice' => $uniqueInvoice,
-                'subscription_plan_id' => $subscription->id,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'status' => SubscriptionStatus::ACTIVE->name,
-                'stripe_session_id' => $createPaymentRequest['session_id'],
-                'stripe_subscription' => $createPaymentRequest['subscription'],
-                'stripe_customer' => $createPaymentRequest['customer'],
-                'stripe_created' => DatetimeHelpers::convertUnixTimestampToCarbonInstance($createPaymentRequest['created']),
-                'stripe_expires_at' => DatetimeHelpers::convertUnixTimestampToCarbonInstance($createPaymentRequest['expires_at']),
-                'stripe_payment_status' => $createPaymentRequest['payment_status'],
-                'stripe_status' => $createPaymentRequest['status'],
-            ]);
+            $existingSubscription = CustomerSubscription::where('customer_id', $customerId)
+                ->first();
+
+            if (!$existingSubscription) {
+                PaymentHelpers::createANewCustomerSubscription($customerId, $paymentIntentId, $uniqueInvoice);
+            }
+
+            $existingSubscription->invoice = $uniqueInvoice;
+            $existingSubscription->save();
 
             $user->is_subscribed = 1;
+            $user->customer_id = $customerId;
             $user->save();
 
             DB::commit();
 
-            $userSubscription = UserSubscriptionPayment::where('session_id', $createPaymentRequest['session_id'])
-                ->where('customer', $createPaymentRequest['customer'])
-                ->where('subscription', $createPaymentRequest['subscription'])
+            $customerPayment = CustomerPayment::where('customer_id', $customerId)
                 ->first();
 
-            if ($userSubscription) {
+            if ($customerPayment) {
                 $details = [
                     'type' => EmailTypes::PAYMENT_CHECKOUT_CONFIRMATION->name,
                     'recipientEmail' => trim($user->email),
@@ -93,17 +88,10 @@ class PaymentsService
     }
 
     /**
-     * @param $username
-     * @return string
+     * @param $email
+     * @return JsonResponse
      */
-    private function generateUniqueInvoice($username)
-    {
-        $firstLetter = substr($username, 0, 1);
-        $lastLetter = substr($username, -1);
-        return 'PDI' . Carbon::now()->format('dmYHi') . strtoupper($firstLetter . $lastLetter);
-    }
-
-    public function getUserPayments($email)
+    public function getUserPayments($email): JsonResponse
     {
         try {
             $user = User::where('email', trim($email))->firstOrFail();

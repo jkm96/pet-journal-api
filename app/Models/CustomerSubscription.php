@@ -5,28 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserSubscription extends Model
+class CustomerSubscription extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'customer_id',
+        'payment_intent_id',
         'subscription_plan_id',
+        'invoice',
         'start_date',
         'end_date',
-        'invoice',
         'status',
-        'stripe_session_id',
-        'stripe_subscription',
-        'stripe_customer',
-        'stripe_created',
-        'stripe_expires_at',
-        'stripe_payment_status',
-        'stripe_status',
     ];
 
     /**
-     * Get the user that owns the UserSubscription.
+     * Get the user that owns the CustomerSubscription.
      */
     public function user()
     {
@@ -34,7 +28,7 @@ class UserSubscription extends Model
     }
 
     /**
-     * Get the SubscriptionPlan associated with the UserSubscription.
+     * Get the SubscriptionPlan associated with the CustomerSubscription.
      */
     public function subscriptionPlan()
     {

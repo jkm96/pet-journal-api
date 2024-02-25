@@ -67,15 +67,11 @@
 
 <body>
 <div class="container">
-    <h4>Hello Test,</h4>
+    <h4>Hello {{ $username }},</h4>
     <p>We're pleased to inform you that your payment of $4.00 USD has been received successfully and is being processed. Thank you for choosing Pet Diaries!</p>
 
-    <h4 class="h4">Kindest regards,<br>
-        The Pet Diaries Team
-    </h4>
+    @include('mail.slogan')
 
-    <p class="slogan">Made with love for pet lovers</p>
-    <p class="copyright">&copy; {{ date('Y') }} Pet Diaries. All rights reserved.</p>
 </div>
 </body>
 

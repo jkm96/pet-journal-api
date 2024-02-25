@@ -8,7 +8,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CreatePaymentRequest extends FormRequest
+class CreateUserSubscriptionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,14 +26,8 @@ class CreatePaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'session_id' => 'required|string',
-            'subscription' => 'required|string',
-            'customer' => 'required|string',
-            'created' => 'required',
-            'expires_at' => 'required',
-            'payment_intent' => 'required|string',
-            'payment_status' => 'required|string',
-            'status' => 'required|string',
+            'customer_id' => 'required|string',
+            'customer_email' => 'required|string',
         ];
     }
 

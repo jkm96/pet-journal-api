@@ -46,7 +46,7 @@ class User extends Authenticatable
      */
     public function userSubscriptions()
     {
-        return $this->hasOne(UserSubscription::class);
+        return $this->hasOne(CustomerSubscription::class);
     }
 
     /**

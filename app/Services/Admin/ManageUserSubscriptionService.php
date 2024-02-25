@@ -3,16 +3,78 @@
 namespace App\Services\Admin;
 
 use App\Http\Resources\UserSubscriptionResource;
-use App\Models\UserSubscription;
+use App\Jobs\DispatchEmailNotificationsJob;
+use App\Models\CustomerSubscription;
+use App\Models\User;
+use App\Utils\Enums\EmailTypes;
+use App\Utils\Helpers\ModelCrudHelpers;
+use App\Utils\Helpers\PaymentHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use App\Utils\Traits\DateFilterTrait;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ManageUserSubscriptionService
 {
     use DateFilterTrait;
+
+    /**
+     * @param $createPaymentRequest
+     * @return JsonResponse
+     */
+    public function adminCreateUserSubscription($createPaymentRequest)
+    {
+        try {
+            $customerId = trim($createPaymentRequest['customer_id']);
+            $customerEmail = trim($createPaymentRequest['customer_email']);
+
+            DB::beginTransaction();
+
+            $user = User::where('customer_id', $customerId)->orWhere('email', $customerEmail)->firstOrFail();
+            $uniqueInvoice = PaymentHelpers::generateUniqueInvoice($user->username);
+            $existingSubscription = CustomerSubscription::where('customer_id', $customerId)
+                ->first();
+
+            if (!$existingSubscription) {
+                PaymentHelpers::createANewCustomerSubscription($customerId, "$-paymentIntentId", $uniqueInvoice);
+            }
+
+            $existingSubscription->invoice = $uniqueInvoice;
+            $existingSubscription->save();
+
+            $user->is_subscribed = 1;
+            $user->customer_id = $customerId;
+            $user->save();
+
+            DB::commit();
+
+            $details = [
+                'type' => EmailTypes::PAYMENT_CHECKOUT_CONFIRMATION->name,
+                'recipientEmail' => trim($user->email),
+                'username' => trim($user->username),
+                'invoice' => $uniqueInvoice,
+            ];
+
+            DispatchEmailNotificationsJob::dispatch($details);
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['user' => $user],
+                'Payment created successfully',
+                200
+            );
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error retrieving billing details',
+                500
+            );
+        }
+    }
 
     /**
      * @param $queryParams
@@ -21,9 +83,9 @@ class ManageUserSubscriptionService
     public function getUserSubscriptions($queryParams)
     {
         try {
-            $query = UserSubscription::orderBy('created_at', 'desc');
+            $query = CustomerSubscription::orderBy('created_at', 'desc');
             if ($queryParams['fetch_criteria'] == "all") {
-               $query = $query->with(['user', 'subscriptionPlan']);
+                $query = $query->with(['user', 'subscriptionPlan']);
             }
 
             $this->applyFilters($query, $queryParams);
