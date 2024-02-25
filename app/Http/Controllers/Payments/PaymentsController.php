@@ -28,6 +28,10 @@ class PaymentsController extends Controller
         return $this->_paymentsService->createUserPayment($createPaymentRequest);
     }
 
+    /**
+     * @param $userEmail
+     * @return JsonResponse
+     */
     public function getBillingInfo($userEmail): JsonResponse
     {
         return $this->_paymentsService->getUserPayments($userEmail);

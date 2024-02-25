@@ -32,6 +32,7 @@ class PaymentsService
      */
     public function createUserPayment($createPaymentRequest)
     {
+        Log::info($createPaymentRequest);
         $user = auth()->user();
         $uniqueInvoice = PaymentHelpers::generateUniqueInvoice($user->username);
         $customerId = $createPaymentRequest['customer'];
