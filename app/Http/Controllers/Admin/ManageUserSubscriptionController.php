@@ -19,10 +19,11 @@ class ManageUserSubscriptionController extends Controller
 
     /**
      * @param FetchUserSubscriptionRequest $subscriptionRequest
-     * @return null
+     * @param $userId
+     * @return JsonResponse
      */
-    public function getUserSubscriptions(FetchUserSubscriptionRequest $subscriptionRequest){
-        return $this->_manageUserSubscriptionService->getUserSubscriptions($subscriptionRequest);
+    public function getUserSubscriptions(FetchUserSubscriptionRequest $subscriptionRequest,$userId){
+        return $this->_manageUserSubscriptionService->getUserSubscriptions($subscriptionRequest,$userId);
     }
 
     /**
@@ -31,5 +32,14 @@ class ManageUserSubscriptionController extends Controller
      */
     public function createUserSubscription(CreateUserSubscriptionRequest $subscriptionRequest){
         return $this->_manageUserSubscriptionService->adminCreateUserSubscription($subscriptionRequest);
+    }
+
+    /**
+     * @param $userId
+     * @return JsonResponse
+     */
+    public function toggleUserSubscriptionStatus($userId)
+    {
+        return $this->_manageUserSubscriptionService->toggleUserSubscription($userId);
     }
 }

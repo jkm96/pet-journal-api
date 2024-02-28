@@ -90,37 +90,10 @@ class ManageUserService
             );
         } catch (ModelNotFoundException $e) {
             return ModelCrudHelpers::itemNotFoundError($e);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error toggling user',
-                500
-            );
-        }
-    }
-
-    /**
-     * @param $userId
-     * @return JsonResponse
-     */
-    public function toggleUserSubscription($userId)
-    {
-        try {
-            $user = User::findOrFail($userId);
-            $user->is_subscribed = $user->is_subscribed ? 0 : 1;
-            $user->update();
-
-            return ResponseHelpers::ConvertToJsonResponseWrapper(
-                ['user' => $user],
-                'User subscription status toggled successfully',
-                200
-            );
-        } catch (ModelNotFoundException $e) {
-            return ModelCrudHelpers::itemNotFoundError($e);
-        } catch (\Exception $e) {
-            return ResponseHelpers::ConvertToJsonResponseWrapper(
-                ['error' => $e->getMessage()],
-                'Error toggling user subscription status',
                 500
             );
         }

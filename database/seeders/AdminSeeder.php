@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
+use App\Utils\Helpers\AuthHelpers;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,7 +18,8 @@ class AdminSeeder extends Seeder
             Admin::create([
                 'username' => 'jkmdroid',
                 'email' => 'jkmdroid@petdiaries.io',
-                'password' => Hash::make('jkm@2pac')
+                'password' => Hash::make('jkm@2pac'),
+                'profile_url' => AuthHelpers::createUserAvatarFromName("jkmdroid",true)
             ]);
             $this->command->info('Admin user created successfully!');
         } else {

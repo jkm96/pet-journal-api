@@ -26,7 +26,7 @@ class AuthAdminService
             ]);
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(new AdminResource($user), 'Registered successfully', 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during admin registration', 500);
         }
     }

@@ -78,15 +78,18 @@ class ManageUserSubscriptionService
 
     /**
      * @param $queryParams
+     * @param $userId
      * @return JsonResponse
      */
-    public function getUserSubscriptions($queryParams)
+    public function getUserSubscriptions($queryParams, $userId)
     {
         try {
-            $query = CustomerSubscription::orderBy('created_at', 'desc');
-            if ($queryParams['fetch_criteria'] == "all") {
-                $query = $query->with(['user', 'subscriptionPlan']);
-            }
+            $user = User::findOrFail($userId);
+            $query = $user->userSubscriptions()
+                ->with(['subscriptionPlan'])
+                ->orderBy('created_at', 'desc');
+
+            //TODO apply search term filters
 
             $this->applyFilters($query, $queryParams);
             $userSubscriptions = $query->get();
@@ -96,6 +99,9 @@ class ManageUserSubscriptionService
                 'User subscriptions retrieved successfully',
                 200
             );
+
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
         } catch (Exception $e) {
             Log::error('Exception when retrieving user subscriptions: ' . $e->getMessage());
 
@@ -130,6 +136,33 @@ class ManageUserSubscriptionService
                 $query->where('username', 'like', '%' . $searchTerm . '%')
                     ->orWhere('email', 'like', '%' . $searchTerm . '%');
             });
+        }
+    }
+
+    /**
+     * @param $userId
+     * @return JsonResponse
+     */
+    public function toggleUserSubscription($userId)
+    {
+        try {
+            $user = User::findOrFail($userId);
+            $user->is_subscribed = $user->is_subscribed ? 0 : 1;
+            $user->update();
+
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['user' => $user],
+                'User subscription status toggled successfully',
+                200
+            );
+        } catch (ModelNotFoundException $e) {
+            return ModelCrudHelpers::itemNotFoundError($e);
+        } catch (Exception $e) {
+            return ResponseHelpers::ConvertToJsonResponseWrapper(
+                ['error' => $e->getMessage()],
+                'Error toggling user subscription status',
+                500
+            );
         }
     }
 }

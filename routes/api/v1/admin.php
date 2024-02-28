@@ -16,12 +16,12 @@ Route::group(['prefix' => 'v1/admin', 'namespace' => 'api/v1', 'middleware' => '
             Route::get('', [ManageUserController::class, 'getUsers']);
             Route::get('{userId}', [ManageUserController::class, 'getUserById']);
             Route::put('{userId}/toggle-status', [ManageUserController::class, 'toggleUserStatus']);
-            Route::put('{userId}/toggle-subscription', [ManageUserController::class, 'toggleUserSubscriptionStatus']);
         });
 
         Route::group(['prefix' => 'user-subscriptions', 'middleware' => 'api'], function () {
             Route::post('', [ManageUserSubscriptionController::class, 'createUserSubscription']);
-            Route::get('', [ManageUserSubscriptionController::class, 'getUserSubscriptions']);
+            Route::get('{userId}', [ManageUserSubscriptionController::class, 'getUserSubscriptions']);
+            Route::put('{userId}/toggle-subscription', [ManageUserSubscriptionController::class, 'toggleUserSubscriptionStatus']);
         });
     });
 });

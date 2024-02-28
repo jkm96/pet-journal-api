@@ -14,7 +14,11 @@ use Psy\Util\Str;
 class SiteContentService
 {
 
-    public function fetchSiteContentByType($contentRequest)
+    /**
+     * @param $contentRequest
+     * @return JsonResponse
+     */
+    public function fetchSiteContentByType($contentRequest): JsonResponse
     {
         $type = trim($contentRequest['type']);
         try {
