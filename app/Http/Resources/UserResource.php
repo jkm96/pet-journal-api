@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             'profile_cover_url' => $this->profile_cover_url,
             'status' => $this->status,
             'is_email_verified' => $this->is_email_verified,
+            'email_verified_at' => $this->email_verified_at,
             'is_subscribed' => $this->is_subscribed,
             'is_active' => $this->is_active,
             'is_admin' => 0,

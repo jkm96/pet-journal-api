@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Admin;
 use App\Utils\Helpers\AuthHelpers;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
@@ -14,6 +15,7 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
+        Admin::truncate();
         if (Admin::count() === 0) {
             Admin::create([
                 'username' => 'jkmdroid',
