@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Mail\PaymentCheckoutConfirmationMail;
 use App\Mail\PaymentCheckoutReceiptMail;
 use App\Mail\SubscriptionRenewalConfirmationMail;
+use App\Mail\UserForgotPasswordMail;
 use App\Mail\UserVerificationMail;
 use App\Utils\Enums\EmailTypes;
 use Exception;
@@ -64,6 +65,9 @@ class DispatchEmailNotificationsJob implements ShouldQueue
             switch ($emailData['type']) {
                 case EmailTypes::USER_VERIFICATION->name:
                     $email = new UserVerificationMail($emailData);
+                    break;
+                case EmailTypes::USER_FORGOT_PASSWORD->name:
+                    $email = new UserForgotPasswordMail($emailData);
                     break;
                 case EmailTypes::PAYMENT_CHECKOUT_RECEIPT->name:
                     $email = new PaymentCheckoutReceiptMail($emailData);

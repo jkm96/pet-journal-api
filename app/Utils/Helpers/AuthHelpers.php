@@ -22,7 +22,7 @@ class AuthHelpers
         $tokenDetails = $apiUser->tokens()->latest()->first();
         $tokenDetails->token = $token;
 
-        if ($isAdmin){
+        if ($isAdmin) {
             $apiUser->auth_token = $token;
             $apiUser->update();
 

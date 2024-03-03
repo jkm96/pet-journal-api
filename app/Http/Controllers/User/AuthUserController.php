@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ForgotPasswordRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegistrationRequest;
 use App\Http\Requests\UserVerificationRequest;
@@ -56,6 +58,26 @@ class AuthUserController extends Controller
     public function loginUser(UserLoginRequest $loginRequest)
     {
         return $this->_userService->loginUser($loginRequest->validated());
+    }
+
+    /**
+     * Request for a password reset
+     * @param ForgotPasswordRequest $forgotPasswordRequest
+     * @return JsonResponse
+     */
+    public function requestPasswordReset(ForgotPasswordRequest $forgotPasswordRequest)
+    {
+        return $this->_userService->forgotPassword($forgotPasswordRequest);
+    }
+
+    /**
+     * Request for a password reset
+     * @param ResetPasswordRequest $resetPasswordRequest
+     * @return JsonResponse
+     */
+    public function changePassword(ResetPasswordRequest $resetPasswordRequest)
+    {
+        return $this->_userService->resetPassword($resetPasswordRequest);
     }
 
     /**

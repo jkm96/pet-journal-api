@@ -5,6 +5,7 @@ namespace App\Utils\Enums;
 enum EmailTypes
 {
     case USER_VERIFICATION;
+    case USER_FORGOT_PASSWORD;
     case PAYMENT_CHECKOUT_RECEIPT;
     case PAYMENT_CHECKOUT_CONFIRMATION;
     case SUBSCRIPTION_RENEWAL_CONFIRMATION;

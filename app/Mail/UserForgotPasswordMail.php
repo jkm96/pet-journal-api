@@ -11,7 +11,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 
-class UserVerificationMail extends Mailable
+class UserForgotPasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
     private $details;
@@ -31,7 +31,7 @@ class UserVerificationMail extends Mailable
     {
         return new Envelope(
             from: new Address('info@petdiaries.io', 'Pet Diaries'),
-            subject: 'User Verification Mail',
+            subject: 'Reset your password request',
         );
     }
 
@@ -41,10 +41,10 @@ class UserVerificationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.user_verification',
+            view: 'mail.user_forgot_password',
             with: [
                 'username' => $this->details['username'],
-                'verificationUrl' => $this->details['verificationUrl'],
+                'resetPassUrl' => $this->details['resetPassUrl'],
             ],
         );
     }
