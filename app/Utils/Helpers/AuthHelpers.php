@@ -7,6 +7,7 @@ use App\Http\Resources\TokenResource;
 use App\Http\Resources\UserResource;
 use App\Utils\Constants\AppConstants;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Str;
 
 class AuthHelpers
@@ -83,10 +84,19 @@ class AuthHelpers
         $constructName = AppConstants::$appName . '-' . $username . '-' . Carbon::now() . '.png';
         $imageName = Str::lower(str_replace(' ', '-', $constructName));
         $directoryPath = $isProfilePicture ? 'images/user_profile_avatars/' : 'images/user_profile_covers/';
-        if (!file_exists(public_path($directoryPath))) {
-            mkdir($directoryPath, 0777, true);
+        $fullDirectoryPath = public_path($directoryPath);
+        if (!file_exists($fullDirectoryPath)) {
+            mkdir($fullDirectoryPath, 0777, true);
         }
-        imagepng($image, public_path($directoryPath . $imageName));
+
+        if (!file_exists($fullDirectoryPath)) {
+            // If the directory still doesn't exist after attempting to create it, handle the error appropriately
+            // For example, throw an exception or log an error message
+            throw new Exception("Failed to create directory: $fullDirectoryPath");
+        }
+
+        $imagePath = $fullDirectoryPath . $imageName;
+        imagepng($image, $imagePath);
         imagedestroy($image);
 
         return url($directoryPath . $imageName);
