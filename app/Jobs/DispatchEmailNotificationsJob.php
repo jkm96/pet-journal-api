@@ -36,7 +36,7 @@ class DispatchEmailNotificationsJob implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 5;
+    public $tries = 1;
 
     /**
      * The maximum number of unhandled exceptions to allow before failing.
@@ -50,7 +50,7 @@ class DispatchEmailNotificationsJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 120;
+    public $timeout = 30;
 
     /**
      * Execute the job.
@@ -59,8 +59,8 @@ class DispatchEmailNotificationsJob implements ShouldQueue
     {
         $emailData = $this->jobPayload;
         try {
-            Log::info($emailData);
             Log::info("Email type ".$emailData['type']);
+            Log::info($emailData);
             $email = null;
             switch ($emailData['type']) {
                 case EmailTypes::USER_VERIFICATION->name:

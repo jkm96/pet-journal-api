@@ -26,7 +26,7 @@ class UserResource extends JsonResource
             'email_verified_at' => $this->email_verified_at,
             'is_subscribed' => $this->is_subscribed,
             'is_active' => $this->is_active,
-            'is_admin' => 0,
+            'is_admin' => false,
             'created_at' => $this->created_at,
             'permissions' => $this->whenLoaded('permissions', function () {
                 return $this->permissions->pluck('value')->toArray();

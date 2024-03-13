@@ -16,6 +16,8 @@ class CustomerSubscription extends Model
         'invoice',
         'start_date',
         'end_date',
+        'period_start',
+        'period_end',
         'status',
     ];
 

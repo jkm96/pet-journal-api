@@ -8,7 +8,6 @@ use App\Http\Requests\CustomerFeedbackRequest;
 use App\Http\Requests\FetchSiteContentRequest;
 use App\Services\Content\SiteContentService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ContentMgmtController extends Controller
 {

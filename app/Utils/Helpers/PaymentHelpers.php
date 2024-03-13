@@ -6,7 +6,6 @@ use App\Models\CustomerSubscription;
 use App\Models\SubscriptionPlan;
 use App\Utils\Enums\SubscriptionStatus;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class PaymentHelpers
 {

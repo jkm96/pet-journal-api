@@ -8,7 +8,7 @@ use App\Http\Requests\CreatePetTraitRequest;
 use App\Http\Requests\EditPetProfilePictureRequest;
 use App\Http\Requests\EditPetRequest;
 use App\Http\Requests\EditPetTraitRequest;
-use App\Services\User\PetService;
+use App\Services\Auth\PetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 

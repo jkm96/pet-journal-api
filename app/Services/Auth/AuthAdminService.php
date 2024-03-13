@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Admin;
+namespace App\Services\Auth;
 
 use App\Http\Resources\AdminResource;
 use App\Models\Admin;
@@ -22,6 +22,7 @@ class AuthAdminService
             $user = Admin::create([
                 'username' => $request['username'],
                 'email' => $request['email'],
+                'is_active' => 0,
                 'password' => Hash::make($request['password']),
             ]);
 
@@ -46,7 +47,7 @@ class AuthAdminService
             if ($admin == null)
                 return ResponseHelpers::ConvertToJsonResponseWrapper([], 'Login information is invalid.', 400);
 
-            if (Hash::check($loginRequest["password"], $admin->password)){
+            if (Hash::check($loginRequest["password"], $admin->password) && $admin->is_active == 1){
                 $tokenResource = AuthHelpers::getUserTokenResource($admin,1);
 
                 return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, 'logged in successfully', 200);

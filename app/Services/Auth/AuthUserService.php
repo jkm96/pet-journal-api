@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Services\User;
+namespace App\Services\Auth;
 
 use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\Permission;
 use App\Models\User;
 use App\Models\UserVerification;
-use App\Utils\Constants\AppConstants;
 use App\Utils\Enums\EmailTypes;
 use App\Utils\Enums\PetJournalPermission;
 use App\Utils\Helpers\AuthHelpers;
@@ -14,12 +13,10 @@ use App\Utils\Helpers\ResponseHelpers;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 
 class AuthUserService
@@ -106,7 +103,7 @@ class AuthUserService
                 $userVerify->user->save();
                 $message = "Email has been verified.";
             } else {
-                $message = "Seems like your email is already verified.";
+                $message = "Email has been verified.";
             }
 
             return ResponseHelpers::ConvertToJsonResponseWrapper([], $message, 200);

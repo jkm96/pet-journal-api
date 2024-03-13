@@ -2,17 +2,14 @@
 
 namespace App\Services\Content;
 
-use App\Http\Resources\MagicProjectResource;
 use App\Http\Resources\SiteContentResource;
 use App\Models\CustomerFeedback;
 use App\Models\SiteContent;
-use App\Models\User;
 use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Psy\Util\Str;
 
 class SiteContentService
 {

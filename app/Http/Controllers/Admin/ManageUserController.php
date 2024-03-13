@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FetchUsersRequest;
 use App\Http\Requests\ToggleUserRequest;
-use App\Services\Admin\ManageUserService;
+use App\Services\Auth\ManageUserService;
 use Illuminate\Http\JsonResponse;
 
 class ManageUserController extends Controller

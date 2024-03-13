@@ -8,7 +8,7 @@ use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegistrationRequest;
 use App\Http\Requests\UserVerificationRequest;
-use App\Services\User\AuthUserService;
+use App\Services\Auth\AuthUserService;
 use Illuminate\Http\JsonResponse;
 
 class AuthUserController extends Controller

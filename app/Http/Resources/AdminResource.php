@@ -21,7 +21,7 @@ class AdminResource extends JsonResource
             'email' => $this->email,
             'profile_url' => $this->profile_url,
             'is_email_verified' => $this->is_email_verified,
-            'is_admin' => 1,
+            'is_admin' => true,
             'created_at' => $this->created_at,
         ];
     }

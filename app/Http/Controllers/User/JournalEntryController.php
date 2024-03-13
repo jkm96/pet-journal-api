@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateJournalEntryRequest;
 use App\Http\Requests\FetchJournalEntriesRequest;
 use App\Http\Requests\UpdateJournalEntryRequest;
-use App\Services\User\JournalEntryService;
+use App\Services\Auth\JournalEntryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

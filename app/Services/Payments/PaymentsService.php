@@ -5,22 +5,17 @@ namespace App\Services\Payments;
 use App\Http\Resources\UserSubscriptionResource;
 use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\CustomerPayment;
-use App\Models\SubscriptionPlan;
-use App\Models\User;
 use App\Models\CustomerSubscription;
-use App\Models\CustomerPaymentEvent;
+use App\Models\PaymentReceiptEmail;
+use App\Models\User;
 use App\Utils\Enums\EmailTypes;
-use App\Utils\Enums\SubscriptionStatus;
 use App\Utils\Helpers\AuthHelpers;
-use App\Utils\Helpers\DatetimeHelpers;
 use App\Utils\Helpers\ModelCrudHelpers;
 use App\Utils\Helpers\PaymentHelpers;
 use App\Utils\Helpers\ResponseHelpers;
 use Exception;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -61,14 +56,35 @@ class PaymentsService
                 ->first();
 
             if ($customerPayment) {
-                $details = [
-                    'type' => EmailTypes::PAYMENT_CHECKOUT_CONFIRMATION->name,
-                    'recipientEmail' => trim($user->email),
-                    'username' => trim($user->username),
-                    'invoice' => $uniqueInvoice,
-                ];
+                $emailType = EmailTypes::PAYMENT_CHECKOUT_CONFIRMATION->name;
+                $recipientEmail = trim($user->email);
+                $paymentObjectId = $createPaymentRequest['session_id'];
+                $paymentObjectCreated = $createPaymentRequest['created'];
 
-                DispatchEmailNotificationsJob::dispatch($details);
+                $existingPaymentEmail = PaymentReceiptEmail::where('recipient_email',$recipientEmail)
+                    ->where('payment_object_id',$paymentObjectId)
+                    ->where('payment_object_created',$paymentObjectCreated)
+                    ->first();
+
+                if (!$existingPaymentEmail){
+                    $details = [
+                        'type' => $emailType,
+                        'recipientEmail' => $recipientEmail,
+                        'username' => trim($user->username),
+                        'invoice' => $uniqueInvoice,
+                    ];
+
+                    PaymentReceiptEmail::create([
+                        'payment_object'=> "checkout.session",
+                        'payment_object_id'=> $paymentObjectId,
+                        'payment_object_created'=> $paymentObjectCreated,
+                        'email_type'=> $emailType,
+                        'recipient_email'=> $recipientEmail,
+                        'payload'=> json_encode($details)
+                    ]);
+
+                    DispatchEmailNotificationsJob::dispatch($details);
+                }
             }
 
             $tokenResource = AuthHelpers::getUserTokenResource($user, 0);

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminLoginRequest;
 use App\Http\Requests\AdminRegisterRequest;
-use App\Services\Admin\AuthAdminService;
+use App\Services\Auth\AuthAdminService;
 use Illuminate\Http\JsonResponse;
 
 class AdminController extends Controller
