@@ -24,7 +24,7 @@ class TestController extends Controller
             'username' => 'jack',
         ];
         $existingPaymentEmail = PaymentReceiptEmail::where('recipient_email', $recipientEmail)
-            ->where('payment_object_id',$stripePaymentId)
+            ->where('payment_object_id', $stripePaymentId)
             ->where('payment_object_created', $stripePaymentCreated)
             ->first();
         if (!$existingPaymentEmail) {

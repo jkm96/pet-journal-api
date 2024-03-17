@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class MagicStudioProjectEntry extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'magic_studio_project_id',
         'journal_entry_ids',

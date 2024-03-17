@@ -14,7 +14,8 @@ class UserVerification extends Model
         'token'
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }

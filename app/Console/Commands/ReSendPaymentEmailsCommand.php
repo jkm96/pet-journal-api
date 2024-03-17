@@ -47,7 +47,7 @@ class ReSendPaymentEmailsCommand extends Command
                 ]);
             }
             $this->info("Stuck payment emails resent successfully");
-        }else{
+        } else {
             Log::info(Carbon::now() . " No stuck payment receipt emails found.");
         }
     }

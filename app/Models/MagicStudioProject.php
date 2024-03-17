@@ -19,22 +19,6 @@ class MagicStudioProject extends Model
         'period_to',
     ];
 
-    /**
-     * Get the user that owns the magic studio project.
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * Get the magic studio project entries for the magic studio.
-     */
-    public function magicStudioProjectEntries()
-    {
-        return $this->hasMany(MagicStudioProjectEntry::class);
-    }
-
     protected static function boot()
     {
         parent::boot();
@@ -50,5 +34,21 @@ class MagicStudioProject extends Model
             }
             $project->slug = $uniqueSlug;
         });
+    }
+
+    /**
+     * Get the user that owns the magic studio project.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the magic studio project entries for the magic studio.
+     */
+    public function magicStudioProjectEntries()
+    {
+        return $this->hasMany(MagicStudioProjectEntry::class);
     }
 }

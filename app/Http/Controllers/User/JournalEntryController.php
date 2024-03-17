@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateJournalEntryRequest;
 use App\Http\Requests\FetchJournalEntriesRequest;
 use App\Http\Requests\UpdateJournalEntryRequest;
-use App\Services\Auth\JournalEntryService;
+use App\Services\User\JournalEntryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,9 +26,10 @@ class JournalEntryController extends Controller
      * @param CreateJournalEntryRequest $entryRequest
      * @return null
      */
-    public function createJournalEntry(CreateJournalEntryRequest $entryRequest){
+    public function createJournalEntry(CreateJournalEntryRequest $entryRequest)
+    {
         $fileCount = $entryRequest->files->count();
-        return $this->_journalEntryService->addJournalEntry($entryRequest,$fileCount);
+        return $this->_journalEntryService->addJournalEntry($entryRequest, $fileCount);
     }
 
     /**
@@ -36,7 +37,8 @@ class JournalEntryController extends Controller
      * @param $journalId
      * @return JsonResponse
      */
-    public function editJournalEntry(UpdateJournalEntryRequest $entryRequest, $journalId){
+    public function editJournalEntry(UpdateJournalEntryRequest $entryRequest, $journalId)
+    {
         return $this->_journalEntryService->updateJournalEntry($entryRequest, $journalId);
     }
 
@@ -80,7 +82,8 @@ class JournalEntryController extends Controller
      * @param $journalId
      * @return JsonResponse
      */
-    public function getJournalEntryAttachmentBuffers($journalId){
+    public function getJournalEntryAttachmentBuffers($journalId)
+    {
         return $this->_journalEntryService->retrieveJournalEntryAttachmentBuffers($journalId);
     }
 
@@ -88,8 +91,9 @@ class JournalEntryController extends Controller
      * @param Request $uploadRequest
      * @return null
      */
-    public function uploadJournalEntryAttachment(Request $uploadRequest){
+    public function uploadJournalEntryAttachment(Request $uploadRequest)
+    {
         $fileCount = $uploadRequest->files->count();
-        return $this->_journalEntryService->addJournalEntryAttachments($uploadRequest,$fileCount);
+        return $this->_journalEntryService->addJournalEntryAttachments($uploadRequest, $fileCount);
     }
 }

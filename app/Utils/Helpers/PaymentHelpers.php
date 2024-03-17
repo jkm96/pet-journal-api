@@ -32,7 +32,7 @@ class PaymentHelpers
         $startDate = Carbon::now();
         $endDate = $startDate->copy()->addMonth();
 
-       CustomerSubscription::create([
+        CustomerSubscription::create([
             'customer_id' => $customerId,
             'payment_intent_id' => $paymentIntentId,
             'invoice' => $uniqueInvoice,

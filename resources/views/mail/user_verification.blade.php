@@ -50,12 +50,13 @@
             color: #3d7e4f;
         }
 
-        .slogan{
+        .slogan {
             font-size: 9px;
             font-weight: bolder;
             font-style: normal;
             text-align: center;
         }
+
         .verify-button {
             display: inline-block;
             padding: 10px 20px;

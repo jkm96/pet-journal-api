@@ -104,6 +104,33 @@ class JournalEntryService
     }
 
     /**
+     * @param $entryRequest
+     * @param $journalEntry
+     * @param $fileCount
+     * @return void
+     */
+    public function uploadJournalAttachments($entryRequest, $journalEntry, $fileCount): void
+    {
+        if ($fileCount > 0) {
+            $counter = 0;
+            while ($entryRequest["attachment{$counter}"]) {
+                $file = $entryRequest["attachment{$counter}"];
+                $journalAttachment = new JournalAttachment();
+                $journalAttachment->journal_entry_id = $journalEntry->id;
+                $journalAttachment->type = "image";
+
+                $constructName = AppConstants::$appName . '-' . $counter . '-journal-entry-' . $journalEntry->title . '-' . Carbon::now() . '.' . $file->extension();
+                $imageName = Str::lower(str_replace(' ', '-', $constructName));
+                $file->move(public_path('images/journal_uploads'), $imageName);
+                $sourceUrl = url('images/journal_uploads/' . $imageName);
+                $journalAttachment->source_url = $sourceUrl;
+                $journalAttachment->save();
+                $counter++;
+            }
+        }
+    }
+
+    /**
      * @param $queryParams
      * @return JsonResponse
      */
@@ -136,6 +163,35 @@ class JournalEntryService
                 'Error retrieving journal entries',
                 500
             );
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $params
+     * @return void
+     */
+    private function applyFilters($query, $params)
+    {
+        $this->applyDateFilters($query, $params['period_from'] ?? null, $params['period_to'] ?? null);
+        $this->applySearchTermFilter($query, $params['search_term'] ?? null);
+    }
+
+    /**
+     * @param $query
+     * @param $searchTerm
+     * @return void
+     */
+    private function applySearchTermFilter($query, $searchTerm)
+    {
+        if ($searchTerm) {
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('event', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('mood', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('tags', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('content', 'like', '%' . $searchTerm . '%');
+            });
         }
     }
 
@@ -332,33 +388,6 @@ class JournalEntryService
     }
 
     /**
-     * @param $entryRequest
-     * @param $journalEntry
-     * @param $fileCount
-     * @return void
-     */
-    public function uploadJournalAttachments($entryRequest, $journalEntry, $fileCount): void
-    {
-        if ($fileCount > 0) {
-            $counter = 0;
-            while ($entryRequest["attachment{$counter}"]) {
-                $file = $entryRequest["attachment{$counter}"];
-                $journalAttachment = new JournalAttachment();
-                $journalAttachment->journal_entry_id = $journalEntry->id;
-                $journalAttachment->type = "image";
-
-                $constructName = AppConstants::$appName . '-' . $counter . '-journal-entry-' . $journalEntry->title . '-' . Carbon::now() . '.' . $file->extension();
-                $imageName = Str::lower(str_replace(' ', '-', $constructName));
-                $file->move(public_path('images/journal_uploads'), $imageName);
-                $sourceUrl = url('images/journal_uploads/' . $imageName);
-                $journalAttachment->source_url = $sourceUrl;
-                $journalAttachment->save();
-                $counter++;
-            }
-        }
-    }
-
-    /**
      * @param $uploadRequest
      * @param int $fileCount
      * @return JsonResponse
@@ -385,35 +414,6 @@ class JournalEntryService
                 'Error uploading attachments',
                 500
             );
-        }
-    }
-
-    /**
-     * @param $query
-     * @param $params
-     * @return void
-     */
-    private function applyFilters($query, $params)
-    {
-        $this->applyDateFilters($query, $params['period_from'] ?? null, $params['period_to'] ?? null);
-        $this->applySearchTermFilter($query, $params['search_term'] ?? null);
-    }
-
-    /**
-     * @param $query
-     * @param $searchTerm
-     * @return void
-     */
-    private function applySearchTermFilter($query, $searchTerm)
-    {
-        if ($searchTerm) {
-            $query->where(function ($query) use ($searchTerm) {
-                $query->where('title', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('event', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('mood', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('tags', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('content', 'like', '%' . $searchTerm . '%');
-            });
         }
     }
 }

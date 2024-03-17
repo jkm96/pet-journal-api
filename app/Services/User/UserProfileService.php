@@ -19,7 +19,7 @@ class UserProfileService
     {
         $buyer = User::where('id', Auth::user()->getAuthIdentifier())->first();
 
-        return view('buyer.profile.edit')->with('buyer',$buyer);
+        return view('buyer.profile.edit')->with('buyer', $buyer);
     }
 
     /**
@@ -29,7 +29,7 @@ class UserProfileService
     {
         $buyer = User::where('id', Auth::user()->getAuthIdentifier())->first();
 
-        return view('buyer.profile.view')->with('buyer',$buyer);
+        return view('buyer.profile.view')->with('buyer', $buyer);
     }
 
 
@@ -41,16 +41,16 @@ class UserProfileService
     public function updateBuyerProfileDetails($request, $id)
     {
         $request->validate([
-            'username'=>'required|min:5',
-            'id_number'=>'required|min:5',
-            'phone_number'=>'required|min:10',
-            'first_name'=>'required|string',
-            'last_name'=>'required|string'
+            'username' => 'required|min:5',
+            'id_number' => 'required|min:5',
+            'phone_number' => 'required|min:10',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string'
         ]);
 
-        $buyer = User::where('id',$id)->first();
-        if ($request->hasFile('profile_image')){
-            $imageName = str_replace(' ', '_',$buyer->username).'.'.$request->profile_image->extension();
+        $buyer = User::where('id', $id)->first();
+        if ($request->hasFile('profile_image')) {
+            $imageName = str_replace(' ', '_', $buyer->username) . '.' . $request->profile_image->extension();
             $request->profile_image->move(public_path('profile_pictures'), $imageName);
             File::delete($buyer->profile_url);
 

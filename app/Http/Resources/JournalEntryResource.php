@@ -26,11 +26,11 @@ class JournalEntryResource extends JsonResource
                     'image_type' => $extension,
                 ];
                 $attachmentBody = [
-                    'id'=>$attachment->id,
-                    'journal_entry_id'=>$attachment->journal_id,
-                    'source_url'=>$attachment->source_url,
-                    'type'=>$attachment->type,
-                    'buffer'=>$journalBuffer,
+                    'id' => $attachment->id,
+                    'journal_entry_id' => $attachment->journal_id,
+                    'source_url' => $attachment->source_url,
+                    'type' => $attachment->type,
+                    'buffer' => $journalBuffer,
                 ];
                 $journalAttachments[] = $attachmentBody;
             }

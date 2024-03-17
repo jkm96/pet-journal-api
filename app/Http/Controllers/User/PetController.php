@@ -8,7 +8,7 @@ use App\Http\Requests\CreatePetTraitRequest;
 use App\Http\Requests\EditPetProfilePictureRequest;
 use App\Http\Requests\EditPetRequest;
 use App\Http\Requests\EditPetTraitRequest;
-use App\Services\Auth\PetService;
+use App\Services\User\PetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
@@ -86,9 +86,9 @@ class PetController extends Controller
      * @param $petTraitId
      * @return JsonResponse
      */
-    public function editPetTrait(EditPetTraitRequest $editPetTraitRequest, $petId,$petTraitId): JsonResponse
+    public function editPetTrait(EditPetTraitRequest $editPetTraitRequest, $petId, $petTraitId): JsonResponse
     {
-        return $this->_petService->updatePetTrait($editPetTraitRequest,$petId,$petTraitId);
+        return $this->_petService->updatePetTrait($editPetTraitRequest, $petId, $petTraitId);
     }
 
     /**
@@ -99,7 +99,7 @@ class PetController extends Controller
      */
     public function createPetTrait(CreatePetTraitRequest $petTraitRequest, $petId): JsonResponse
     {
-        return $this->_petService->addPetTrait($petTraitRequest,$petId);
+        return $this->_petService->addPetTrait($petTraitRequest, $petId);
     }
 
     /**
@@ -118,6 +118,6 @@ class PetController extends Controller
      */
     public function deletePetTrait($petId, $petTraitId): JsonResponse
     {
-        return $this->_petService->removePetTrait($petId,$petTraitId);
+        return $this->_petService->removePetTrait($petId, $petTraitId);
     }
 }

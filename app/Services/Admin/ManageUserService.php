@@ -48,6 +48,46 @@ class ManageUserService
     }
 
     /**
+     * @param $query
+     * @param $params
+     * @return void
+     */
+    private function applyFilters($query, $params)
+    {
+        Log::info($params);
+        $this->applyDateFilters($query, $params['period_from'] ?? null, $params['period_to'] ?? null);
+        $this->applySearchTermFilter($query, $params['search_term'] ?? null);
+        $this->applySubscriptionFilter($query, $params['is_subscribed'] ?? null);
+    }
+
+    /**
+     * @param $query
+     * @param $searchTerm
+     * @return void
+     */
+    private function applySearchTermFilter($query, $searchTerm)
+    {
+        if ($searchTerm) {
+            $query->where(function ($query) use ($searchTerm) {
+                $query->where('username', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('email', 'like', '%' . $searchTerm . '%');
+            });
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $subscribed
+     * @return void
+     */
+    private function applySubscriptionFilter($query, $subscribed)
+    {
+        if ($subscribed !== null) {
+            $query->where('is_subscribed', $subscribed);
+        }
+    }
+
+    /**
      * @param $userId
      * @return JsonResponse
      */
@@ -96,46 +136,6 @@ class ManageUserService
                 'Error toggling user',
                 500
             );
-        }
-    }
-
-    /**
-     * @param $query
-     * @param $params
-     * @return void
-     */
-    private function applyFilters($query, $params)
-    {
-        Log::info($params);
-        $this->applyDateFilters($query, $params['period_from'] ?? null, $params['period_to'] ?? null);
-        $this->applySearchTermFilter($query, $params['search_term'] ?? null);
-        $this->applySubscriptionFilter($query, $params['is_subscribed'] ?? null);
-    }
-
-    /**
-     * @param $query
-     * @param $searchTerm
-     * @return void
-     */
-    private function applySearchTermFilter($query, $searchTerm)
-    {
-        if ($searchTerm) {
-            $query->where(function ($query) use ($searchTerm) {
-                $query->where('username', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('email', 'like', '%' . $searchTerm . '%');
-            });
-        }
-    }
-
-    /**
-     * @param $query
-     * @param $subscribed
-     * @return void
-     */
-    private function applySubscriptionFilter($query, $subscribed)
-    {
-        if ($subscribed !== null) {
-            $query->where('is_subscribed', $subscribed);
         }
     }
 }

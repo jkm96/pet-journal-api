@@ -32,7 +32,7 @@ class CreateJournalEntryRequest extends FormRequest
             'location' => 'nullable|string|min:2',
             'mood' => 'nullable|string|min:2',
             'tags' => 'nullable|string',
-            'pet_ids' =>'required'
+            'pet_ids' => 'required'
         ];
     }
 

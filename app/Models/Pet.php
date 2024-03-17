@@ -23,30 +23,6 @@ class Pet extends Model
     ];
 
     /**
-     * Get the pet traits for the pet - likes, dislikes.
-     */
-    public function petTraits()
-    {
-        return $this->hasMany(PetTrait::class);
-    }
-
-    /**
-     * Get the journal entries for the pet.
-     */
-    public function journalEntries()
-    {
-        return $this->belongsToMany(JournalEntry::class, 'pet_journal_entries', 'pet_id', 'journal_entry_id');
-    }
-
-    /**
-     * Get the user that owns the pet.
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
      * @return void
      */
     protected static function boot()
@@ -68,5 +44,29 @@ class Pet extends Model
             $pet->slug = $uniqueSlug;
             $pet->user_id = auth()->user()->getAuthIdentifier();
         });
+    }
+
+    /**
+     * Get the user that owns the pet.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the pet traits for the pet - likes, dislikes.
+     */
+    public function petTraits()
+    {
+        return $this->hasMany(PetTrait::class);
+    }
+
+    /**
+     * Get the journal entries for the pet.
+     */
+    public function journalEntries()
+    {
+        return $this->belongsToMany(JournalEntry::class, 'pet_journal_entries', 'pet_id', 'journal_entry_id');
     }
 }

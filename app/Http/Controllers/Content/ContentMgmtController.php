@@ -50,9 +50,9 @@ class ContentMgmtController extends Controller
      * @param $contentId
      * @return JsonResponse
      */
-    public function updateSiteContent(CreateSiteContentRequest $siteContentRequest,$contentId): JsonResponse
+    public function updateSiteContent(CreateSiteContentRequest $siteContentRequest, $contentId): JsonResponse
     {
-        return $this->_contentService->editSiteContent($siteContentRequest,$contentId);
+        return $this->_contentService->editSiteContent($siteContentRequest, $contentId);
     }
 
     /**

@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 class PaymentCheckoutReceiptMail extends Mailable
 {
     use Queueable, SerializesModels;
+
     private $details;
 
     /**

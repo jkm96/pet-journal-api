@@ -26,7 +26,7 @@ class CustomerSubscription extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'customer_id','customer_id');
+        return $this->belongsTo(User::class, 'customer_id', 'customer_id');
     }
 
     /**

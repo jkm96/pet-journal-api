@@ -16,7 +16,7 @@ class CustomException extends Exception
      * @param $message
      * @param $statusCode
      */
-    public function __construct($data,$message, $statusCode)
+    public function __construct($data, $message, $statusCode)
     {
         $this->message = $message;
         $this->statusCode = $statusCode;

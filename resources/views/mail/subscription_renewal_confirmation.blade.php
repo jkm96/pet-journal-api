@@ -50,7 +50,7 @@
             color: #3d7e4f;
         }
 
-        .slogan{
+        .slogan {
             font-size: 9px;
             font-weight: bolder;
             font-style: normal;

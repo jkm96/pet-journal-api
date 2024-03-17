@@ -21,6 +21,26 @@ class JournalEntry extends Model
         'slug',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Use the 'creating' event to generate and set the unique slug
+        static::creating(function ($journal) {
+            $slug = Str::slug($journal->title);
+            $uniqueSlug = $slug;
+
+            // Check for uniqueness and append a number if needed
+            $counter = 1;
+            while (static::where('slug', $uniqueSlug)->exists()) {
+                $uniqueSlug = $slug . '-' . $counter;
+                $counter++;
+            }
+            $journal->user_id = auth()->user()->getAuthIdentifier();
+            $journal->slug = $uniqueSlug;
+        });
+    }
+
     /**
      * Get the user associated with the journal entry.
      */
@@ -43,25 +63,5 @@ class JournalEntry extends Model
     public function journalAttachments()
     {
         return $this->hasMany(JournalAttachment::class);
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Use the 'creating' event to generate and set the unique slug
-        static::creating(function ($journal) {
-            $slug = Str::slug($journal->title);
-            $uniqueSlug = $slug;
-
-            // Check for uniqueness and append a number if needed
-            $counter = 1;
-            while (static::where('slug', $uniqueSlug)->exists()) {
-                $uniqueSlug = $slug . '-' . $counter;
-                $counter++;
-            }
-            $journal->user_id = auth()->user()->getAuthIdentifier();
-            $journal->slug = $uniqueSlug;
-        });
     }
 }

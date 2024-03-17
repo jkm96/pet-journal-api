@@ -25,7 +25,8 @@ class MagicStudioController extends Controller
     /**
      * @return JsonResponse
      */
-    public function getProjects(FetchMagicProjectsRequest $projectsRequest){
+    public function getProjects(FetchMagicProjectsRequest $projectsRequest)
+    {
         return $this->_magicStudioService->getAllProjects($projectsRequest);
     }
 
@@ -33,7 +34,8 @@ class MagicStudioController extends Controller
      * @param $projectSlug
      * @return JsonResponse
      */
-    public function getProjectById($projectSlug){
+    public function getProjectById($projectSlug)
+    {
         return $this->_magicStudioService->getProjectWithEntries($projectSlug);
     }
 
@@ -41,7 +43,8 @@ class MagicStudioController extends Controller
      * @param SavePdfRequest $savePdfRequest
      * @return JsonResponse
      */
-    public function saveProjectPdf(SavePdfRequest $savePdfRequest){
+    public function saveProjectPdf(SavePdfRequest $savePdfRequest)
+    {
         Log::info($savePdfRequest);
         return $this->_magicStudioService->updateProjectContent($savePdfRequest);
     }

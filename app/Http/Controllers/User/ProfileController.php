@@ -52,7 +52,7 @@ class ProfileController extends Controller
      */
     public function updateBuyerProfile(Request $request, $buyer_id)
     {
-        return $this->_memberService->updateBuyerProfileDetails($request,$buyer_id);
+        return $this->_memberService->updateBuyerProfileDetails($request, $buyer_id);
     }
 
 }

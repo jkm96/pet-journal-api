@@ -50,7 +50,7 @@
             color: #3d7e4f;
         }
 
-        .slogan{
+        .slogan {
             font-size: 9px;
             font-weight: bolder;
             font-style: normal;
@@ -68,7 +68,8 @@
 <body>
 <div class="container">
     <h4>Hello {{ $username }},</h4>
-    <p>We're pleased to inform you that your payment of $4.00 USD has been received successfully and is being processed. Thank you for choosing Pet Diaries!</p>
+    <p>We're pleased to inform you that your payment of $4.00 USD has been received successfully and is being processed.
+        Thank you for choosing Pet Diaries!</p>
 
     @include('mail.slogan')
 

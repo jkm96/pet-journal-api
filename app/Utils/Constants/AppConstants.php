@@ -18,6 +18,6 @@ class AppConstants
 
     public static $PetTraitType = array(
         'like' => 'LIKE',
-        'dislike' =>'DISLIKE'
+        'dislike' => 'DISLIKE'
     );
 }

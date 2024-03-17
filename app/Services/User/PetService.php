@@ -32,9 +32,9 @@ class PetService
         try {
             DB::beginTransaction();
 
-            if (!$petRequest['profile_picture']){
+            if (!$petRequest['profile_picture']) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
-                    ['error'=>"Pet profile picture is required"],
+                    ['error' => "Pet profile picture is required"],
                     "Pet profile picture is required",
                     400
                 );
@@ -75,6 +75,20 @@ class PetService
                 400
             );
         }
+    }
+
+    /**
+     * @param $image
+     * @param $petName
+     * @return \Illuminate\Contracts\Foundation\Application|UrlGenerator|Application|string
+     */
+    public function getPetProfileUrl($image, $petName): \Illuminate\Contracts\Foundation\Application|UrlGenerator|string|Application
+    {
+        $constructName = AppConstants::$appName . '-' . $petName . '-' . Carbon::now() . '.' . $image->extension();
+        $imageName = Str::lower(str_replace(' ', '-', $constructName));
+        $image->move(public_path('images/pet_profiles'), $imageName);
+
+        return url('images/pet_profiles/' . $imageName);
     }
 
     /**
@@ -192,9 +206,9 @@ class PetService
                 );
             }
 
-            if (!$updateRequest['profile_picture']){
+            if (!$updateRequest['profile_picture']) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
-                    ['error'=>"Pet profile picture is required"],
+                    ['error' => "Pet profile picture is required"],
                     "Pet profile picture is required",
                     400
                 );
@@ -417,19 +431,5 @@ class PetService
                 400
             );
         }
-    }
-
-    /**
-     * @param $image
-     * @param $petName
-     * @return \Illuminate\Contracts\Foundation\Application|UrlGenerator|Application|string
-     */
-    public function  getPetProfileUrl($image, $petName): \Illuminate\Contracts\Foundation\Application|UrlGenerator|string|Application
-    {
-        $constructName = AppConstants::$appName . '-' . $petName . '-' . Carbon::now() . '.' . $image->extension();
-        $imageName = Str::lower(str_replace(' ', '-', $constructName));
-        $image->move(public_path('images/pet_profiles'), $imageName);
-
-        return url('images/pet_profiles/' . $imageName);
     }
 }

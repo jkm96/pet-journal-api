@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 class SubscriptionRenewalConfirmationMail extends Mailable
 {
     use Queueable, SerializesModels;
+
     private $details;
 
     /**

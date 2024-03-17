@@ -68,7 +68,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             HandleCors::class,
-            ThrottleRequests::class.':api',
+            ThrottleRequests::class . ':api',
             SubstituteBindings::class,
             ConvertRequestFieldsToSnakeCase::class,
             ConvertResponseFieldsToCamelCase::class,

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class CustomerPaymentEvent extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'event_id',
         'object_type',

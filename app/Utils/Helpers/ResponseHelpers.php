@@ -47,8 +47,8 @@ class ResponseHelpers
 
         $response = [
             "data" => [
-                'paging_metaData'=>$paginationData,
-                'data'=>$data
+                'paging_metaData' => $paginationData,
+                'data' => $data
             ],
             "statusCode" => $statusCode,
             "message" => $message,

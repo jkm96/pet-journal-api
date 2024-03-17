@@ -12,7 +12,7 @@ class LogHeadersMiddleware
      * Handle an incoming request.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Closure                 $next
+     * @param \Closure $next
      *
      * @return mixed
      */
@@ -36,7 +36,7 @@ class LogHeadersMiddleware
      * Log headers.
      *
      * @param string $label
-     * @param array  $headers
+     * @param array $headers
      */
     private function logHeaders($label, array $headers)
     {

@@ -41,14 +41,14 @@ class AuthAdminService
         try {
             $emailOrUsername = $loginRequest["username"];
             $admin = Admin::where('email', $emailOrUsername)
-                ->orWhere('username',$emailOrUsername)
+                ->orWhere('username', $emailOrUsername)
                 ->first();
 
             if ($admin == null)
                 return ResponseHelpers::ConvertToJsonResponseWrapper([], 'Login information is invalid.', 400);
 
-            if (Hash::check($loginRequest["password"], $admin->password) && $admin->is_active == 1){
-                $tokenResource = AuthHelpers::getUserTokenResource($admin,1);
+            if (Hash::check($loginRequest["password"], $admin->password) && $admin->is_active == 1) {
+                $tokenResource = AuthHelpers::getUserTokenResource($admin, 1);
 
                 return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, 'logged in successfully', 200);
             }

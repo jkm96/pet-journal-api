@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Jobs\DispatchEmailNotificationsJob;
 use App\Models\CustomerPayment;
 use App\Models\CustomerPaymentEvent;
 use App\Models\CustomerSubscription;
@@ -105,7 +104,7 @@ class PaymentCheckoutListener implements ShouldQueue
                     Log::info("sending SUBSCRIPTION_RENEWAL_CONFIRMATION email");
                     $user = User::where('customer_id', $customerId)->first();
                     $uniqueInvoice = PaymentHelpers::generateUniqueInvoice($user->username);
-                    $recipientEmail =  trim($user->email);
+                    $recipientEmail = trim($user->email);
                     $emailType = EmailTypes::SUBSCRIPTION_RENEWAL_CONFIRMATION->name;
                     //TODO handle customer subscription renewal
                     $emailDetails = [

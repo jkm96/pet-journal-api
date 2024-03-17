@@ -29,7 +29,7 @@ class AuthHelpers
 
             return [
                 "token" => new TokenResource($tokenDetails),
-                "user" => new AdminResource($apiUser)
+                "user" => new UserResource($apiUser)
             ];
         }
 
@@ -44,6 +44,7 @@ class AuthHelpers
      * @param $username
      * @param $isProfilePicture
      * @return string
+     * @throws Exception
      */
     public static function createUserAvatarFromName($username, $isProfilePicture): string
     {

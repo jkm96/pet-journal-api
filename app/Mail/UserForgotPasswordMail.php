@@ -14,6 +14,7 @@ use Illuminate\Queue\SerializesModels;
 class UserForgotPasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
+
     private $details;
 
     /**

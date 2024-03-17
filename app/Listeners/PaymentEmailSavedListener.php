@@ -6,11 +6,17 @@ use App\Events\PaymentEmailSavedEvent;
 use App\Jobs\DispatchEmailNotificationsJob;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Log;
 
 class PaymentEmailSavedListener implements ShouldQueue
 {
     use InteractsWithQueue;
+
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 10;
 
     /**
      * Create the event listener.
@@ -19,13 +25,6 @@ class PaymentEmailSavedListener implements ShouldQueue
     {
         //
     }
-
-    /**
-     * The number of seconds the job can run before timing out.
-     *
-     * @var int
-     */
-    public $timeout = 10;
 
     /**
      * Handle the event.

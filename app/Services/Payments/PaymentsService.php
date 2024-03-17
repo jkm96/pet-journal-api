@@ -61,12 +61,12 @@ class PaymentsService
                 $paymentObjectId = $createPaymentRequest['session_id'];
                 $paymentObjectCreated = $createPaymentRequest['created'];
 
-                $existingPaymentEmail = PaymentReceiptEmail::where('recipient_email',$recipientEmail)
-                    ->where('payment_object_id',$paymentObjectId)
-                    ->where('payment_object_created',$paymentObjectCreated)
+                $existingPaymentEmail = PaymentReceiptEmail::where('recipient_email', $recipientEmail)
+                    ->where('payment_object_id', $paymentObjectId)
+                    ->where('payment_object_created', $paymentObjectCreated)
                     ->first();
 
-                if (!$existingPaymentEmail){
+                if (!$existingPaymentEmail) {
                     $details = [
                         'type' => $emailType,
                         'recipientEmail' => $recipientEmail,
@@ -75,12 +75,12 @@ class PaymentsService
                     ];
 
                     PaymentReceiptEmail::create([
-                        'payment_object'=> "checkout.session",
-                        'payment_object_id'=> $paymentObjectId,
-                        'payment_object_created'=> $paymentObjectCreated,
-                        'email_type'=> $emailType,
-                        'recipient_email'=> $recipientEmail,
-                        'payload'=> json_encode($details)
+                        'payment_object' => "checkout.session",
+                        'payment_object_id' => $paymentObjectId,
+                        'payment_object_created' => $paymentObjectCreated,
+                        'email_type' => $emailType,
+                        'recipient_email' => $recipientEmail,
+                        'payload' => json_encode($details)
                     ]);
 
                     DispatchEmailNotificationsJob::dispatch($details);

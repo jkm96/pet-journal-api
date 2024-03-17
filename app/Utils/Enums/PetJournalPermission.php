@@ -2,7 +2,7 @@
 
 namespace App\Utils\Enums;
 
-enum PetJournalPermission:int
+enum PetJournalPermission: int
 {
     case PermissionsUsersView = 900;
     case PermissionsUsersCreate = 901;

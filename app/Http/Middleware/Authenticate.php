@@ -14,6 +14,6 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
-        throw new CustomException([],"You are not authenticated",401);
+        throw new CustomException([], "You are not authenticated", 401);
     }
 }

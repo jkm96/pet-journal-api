@@ -51,7 +51,7 @@ class AuthUserService
 
             //send email verification message
             $token = Str::random(70);
-            $verificationUrl = env('PET_DIARIES_FRONTEND_URL'). '/auth/verify-user?token=' . $token;
+            $verificationUrl = env('PET_DIARIES_FRONTEND_URL') . '/auth/verify-user?token=' . $token;
             UserVerification::create([
                 'user_id' => $user->id,
                 'token' => $token
@@ -126,7 +126,7 @@ class AuthUserService
                     ->orWhere('username', $loginRequest['username'])
                     ->firstOrFail();
 
-                $tokenResource = AuthHelpers::getUserTokenResource($user,0);
+                $tokenResource = AuthHelpers::getUserTokenResource($user, 0);
 
                 return ResponseHelpers::ConvertToJsonResponseWrapper($tokenResource, "logged in successfully", 200);
             }
@@ -156,22 +156,22 @@ class AuthUserService
         try {
             $email = trim($forgotPasswordRequest["email"]);
             $userExists = DB::table('users')->where('email', $email)->first();
-            if ($userExists == null){
+            if ($userExists == null) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     [],
-                    "A password reset link has been sent to ".$forgotPasswordRequest["email"],
+                    "A password reset link has been sent to " . $forgotPasswordRequest["email"],
                     200);
             }
 
             //generate token
             $token = Str::random(65);
             DB::table('password_reset_tokens')->insert([
-                'email'=>trim($email),
-                'token'=>$token,
-                'created_at'=>Carbon::now()
+                'email' => trim($email),
+                'token' => $token,
+                'created_at' => Carbon::now()
             ]);
             //send email
-            $resetPassUrl = env('PET_DIARIES_FRONTEND_URL'). '/auth/reset-password?email='.$email.'&token=' . $token;
+            $resetPassUrl = env('PET_DIARIES_FRONTEND_URL') . '/auth/reset-password?email=' . $email . '&token=' . $token;
             $details = [
                 'type' => EmailTypes::USER_FORGOT_PASSWORD->name,
                 'recipientEmail' => $email,
@@ -183,7 +183,7 @@ class AuthUserService
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 [],
-                "A password reset link has been sent to ".$forgotPasswordRequest["email"],
+                "A password reset link has been sent to " . $forgotPasswordRequest["email"],
                 200);
         } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during password reset request', 400);
@@ -202,22 +202,22 @@ class AuthUserService
             $token = $resetPassRequest['token'];
 
             $checkToken = DB::table('password_reset_tokens')->where([
-                'email'=>$email,
-                'token'=>$token
+                'email' => $email,
+                'token' => $token
             ])->first();
 
-            if (!$checkToken){
+            if (!$checkToken) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
-                    ['error'=>'invalid token'],
+                    ['error' => 'invalid token'],
                     'Invalid token. Try requesting for another reset',
                     400
                 );
             }
 
-            User::where('email', $email)->update(['password'=>Hash::make($password)]);
-            DB::table('password_reset_tokens')->where(['email'=>$email])->delete();
+            User::where('email', $email)->update(['password' => Hash::make($password)]);
+            DB::table('password_reset_tokens')->where(['email' => $email])->delete();
 
-            return ResponseHelpers::ConvertToJsonResponseWrapper([],'Password changed successfully.',200);
+            return ResponseHelpers::ConvertToJsonResponseWrapper([], 'Password changed successfully.', 200);
         } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(['error' => $e->getMessage()], 'Error during password reset', 400);
         }

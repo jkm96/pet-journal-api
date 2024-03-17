@@ -22,6 +22,24 @@ class DispatchEmailNotificationsJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $jobPayload;
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
+    /**
+     * The maximum number of unhandled exceptions to allow before failing.
+     *
+     * @var int
+     */
+    public $maxExceptions = 3;
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 30;
 
     /**
      * Create a new job instance.
@@ -32,34 +50,13 @@ class DispatchEmailNotificationsJob implements ShouldQueue
     }
 
     /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
-    public $tries = 1;
-
-    /**
-     * The maximum number of unhandled exceptions to allow before failing.
-     *
-     * @var int
-     */
-    public $maxExceptions = 3;
-
-    /**
-     * The number of seconds the job can run before timing out.
-     *
-     * @var int
-     */
-    public $timeout = 30;
-
-    /**
      * Execute the job.
      */
     public function handle(): void
     {
         $emailData = $this->jobPayload;
         try {
-            Log::info("Email type ".$emailData['type']);
+            Log::info("Email type " . $emailData['type']);
             Log::info($emailData);
             $email = null;
             switch ($emailData['type']) {
@@ -79,7 +76,7 @@ class DispatchEmailNotificationsJob implements ShouldQueue
                     $email = new SubscriptionRenewalConfirmationMail($emailData);
                     break;
             }
-            Log::info("sent email to ".$emailData['recipientEmail']);
+            Log::info("sent email to " . $emailData['recipientEmail']);
             Mail::to($emailData['recipientEmail'])->send($email);
         } catch (Exception $e) {
             Log::error('Error sending email: ' . $e->getMessage());

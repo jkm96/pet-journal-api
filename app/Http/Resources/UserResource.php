@@ -4,17 +4,22 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @return array
      */
     public function toArray($request)
     {
+        $creationDate = Carbon::parse($this->created_at)->startOfDay();
+        $expirationDate = $creationDate->addDays(config('auth.email_verification_grace_period'));
+        $daysLeft = Carbon::now()->diffInDays($expirationDate);
+
         return [
             'id' => $this->id,
             'username' => $this->username,
@@ -31,6 +36,8 @@ class UserResource extends JsonResource
             'permissions' => $this->whenLoaded('permissions', function () {
                 return $this->permissions->pluck('value')->toArray();
             }),
+            'grace_period_count' => $daysLeft,
+            'is_grace_period_expired' => $daysLeft <= 0,
         ];
     }
 }

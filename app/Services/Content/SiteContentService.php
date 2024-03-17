@@ -28,7 +28,7 @@ class SiteContentService
                 $query->where('type', $type);
             }
 
-            $content = $query->orderBy('created_at','desc')->get();
+            $content = $query->orderBy('created_at', 'desc')->get();
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 new SiteContentResource($content),
@@ -77,9 +77,9 @@ class SiteContentService
     {
         try {
             $content = SiteContent::create([
-                'title'=> $siteContentRequest['title'],
-                'content'=> $siteContentRequest['content'],
-                'type'=> trim($siteContentRequest['type'])//privacy, terms
+                'title' => $siteContentRequest['title'],
+                'content' => $siteContentRequest['content'],
+                'type' => trim($siteContentRequest['type'])//privacy, terms
             ]);
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
@@ -104,9 +104,9 @@ class SiteContentService
     {
         try {
             $content = CustomerFeedback::create([
-                'email'=> $feedbackRequest['email'],
-                'rating'=> $feedbackRequest['rating'],
-                'feedback'=> trim($feedbackRequest['feedback'])
+                'email' => $feedbackRequest['email'],
+                'rating' => $feedbackRequest['rating'],
+                'feedback' => trim($feedbackRequest['feedback'])
             ]);
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
