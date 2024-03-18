@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateUserSubscriptionRequest;
 use App\Http\Requests\FetchUserSubscriptionRequest;
-use App\Services\Auth\ManageUserSubscriptionService;
+use App\Services\Admin\ManageUserSubscriptionService;
 use Illuminate\Http\JsonResponse;
 
 class ManageUserSubscriptionController extends Controller

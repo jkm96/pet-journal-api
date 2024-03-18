@@ -143,10 +143,10 @@ return [
     |
     | Here you may define the amount of days before  email confirmation
     | expires and the user cannot access any resources once logged in.
-    | By default, the grace period lasts for 7 days.
+    | By default, the grace period lasts for 5 working days.
     |
     */
 
-    'email_verification_grace_period' => 7,
+    'email_verification_grace_period' => 5,
 
 ];
