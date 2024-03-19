@@ -30,16 +30,18 @@ class ManageUserSubscriptionService
         try {
             $customerId = trim($createPaymentRequest['customer_id']);
             $customerEmail = trim($createPaymentRequest['customer_email']);
+            $billingReason = trim($createPaymentRequest['billing_reason']);
 
             DB::beginTransaction();
 
             $user = User::where('customer_id', $customerId)->orWhere('email', $customerEmail)->firstOrFail();
             $uniqueInvoice = PaymentHelpers::generateUniqueInvoice($user->username);
             $existingSubscription = CustomerSubscription::where('customer_id', $customerId)
+                ->where('billing_reason', $billingReason)
                 ->first();
 
             if (!$existingSubscription) {
-                PaymentHelpers::createANewCustomerSubscription($customerId, "$-paymentIntentId", $uniqueInvoice);
+                PaymentHelpers::createCustomerSubscription($customerId,$billingReason, "$-paymentIntentId", $uniqueInvoice);
             }
 
             $existingSubscription->invoice = $uniqueInvoice;

@@ -40,7 +40,8 @@ class PaymentsService
                 ->first();
 
             if (!$existingSubscription) {
-                PaymentHelpers::createANewCustomerSubscription($customerId, $paymentIntentId, $uniqueInvoice);
+                $billingReason = "subscription_create";
+                PaymentHelpers::createCustomerSubscription($customerId,$billingReason, $paymentIntentId, $uniqueInvoice);
             }
 
             $existingSubscription->invoice = $uniqueInvoice;

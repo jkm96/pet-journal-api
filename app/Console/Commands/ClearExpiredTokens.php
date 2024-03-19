@@ -33,6 +33,5 @@ class ClearExpiredTokens extends Command
             ->where('created_at', '<', now()->subDay())
             ->delete();
         Log::info(Carbon::now() . " Expired tokens cleared successfully.");
-        $this->info('Expired tokens cleared successfully.');
     }
 }

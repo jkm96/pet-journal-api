@@ -11,6 +11,7 @@ use App\Utils\Enums\EmailTypes;
 use App\Utils\Helpers\PaymentHelpers;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Spatie\WebhookClient\Models\WebhookCall;
 use Stripe\Event;
 
@@ -103,18 +104,23 @@ class PaymentCheckoutListener implements ShouldQueue
                 case "subscription_cycle":
                     Log::info("sending SUBSCRIPTION_RENEWAL_CONFIRMATION email");
                     $user = User::where('customer_id', $customerId)->first();
-                    $uniqueInvoice = PaymentHelpers::generateUniqueInvoice($user->username);
-                    $recipientEmail = trim($user->email);
-                    $emailType = EmailTypes::SUBSCRIPTION_RENEWAL_CONFIRMATION->name;
-                    //TODO handle customer subscription renewal
-                    $emailDetails = [
-                        'type' => $emailType,
-                        'recipientEmail' => $recipientEmail,
-                        'username' => trim($user->username),
-                        'invoice' => trim($uniqueInvoice),
-                    ];
+                    if ($user) {
+                        $uniqueInvoice = PaymentHelpers::generateUniqueInvoice($user->username);
+                        $recipientEmail = trim($user->email);
+                        $emailType = EmailTypes::SUBSCRIPTION_RENEWAL_CONFIRMATION->name;
+                        //TODO handle customer subscription renewal
+                        $billingReason = "subscription_cycle";
+                        $paymentIntentId = $stripePayment->payment_intent;
+                        PaymentHelpers::createCustomerSubscription($customerId, $billingReason,$paymentIntentId, $uniqueInvoice);
+                        $emailDetails = [
+                            'type' => $emailType,
+                            'recipientEmail' => $recipientEmail,
+                            'username' => trim($user->username),
+                            'invoice' => trim($uniqueInvoice),
+                        ];
 
-                    $this->savePaymentEmail($recipientEmail, $stripePayment, $emailType, $emailDetails);
+                        $this->savePaymentEmail($recipientEmail, $stripePayment, $emailType, $emailDetails);
+                    }
                     break;
             }
         }
@@ -132,12 +138,13 @@ class PaymentCheckoutListener implements ShouldQueue
             'period_start' => $stripePayment->period_start,
             'period_end' => $stripePayment->period_end,
         ];
-
+        $billingReason = "subscription_create";
         $existingSubscription = CustomerSubscription::where('customer_id', $customerId)
+            ->where(' ', $billingReason)
             ->first();
         if (!$existingSubscription) {
             Log::info("creating CustomerSubscription");
-            PaymentHelpers::createANewCustomerSubscription($customerId, "$-paymentIntentId", "$-uniqueInvoice");
+            PaymentHelpers::createCustomerSubscription($customerId, $billingReason,"$-paymentIntentId", "$-uniqueInvoice");
         } else {
             $existingSubscription->update($subscriptionData);
         }

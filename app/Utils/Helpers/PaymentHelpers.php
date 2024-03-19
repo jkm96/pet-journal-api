@@ -22,11 +22,12 @@ class PaymentHelpers
 
     /**
      * @param mixed $customerId
+     * @param $billingReason
      * @param mixed $paymentIntentId
      * @param string $uniqueInvoice
      * @return void
      */
-    public static function createANewCustomerSubscription($customerId, $paymentIntentId, $uniqueInvoice): void
+    public static function createCustomerSubscription($customerId, $billingReason, $paymentIntentId, $uniqueInvoice): void
     {
         $subscription = SubscriptionPlan::firstOrFail();
         $startDate = Carbon::now();
@@ -34,6 +35,7 @@ class PaymentHelpers
 
         CustomerSubscription::create([
             'customer_id' => $customerId,
+            'billing_reason' => $billingReason,
             'payment_intent_id' => $paymentIntentId,
             'invoice' => $uniqueInvoice,
             'subscription_plan_id' => $subscription->id,

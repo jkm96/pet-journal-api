@@ -29,7 +29,6 @@ class ReSendPaymentEmailsCommand extends Command
      */
     public function handle()
     {
-        Log::info(Carbon::now() . " Resending stuck payment receipt emails.");
         $stuckEmails = PaymentReceiptEmail::where('is_sent', 0)->get();
         if ($stuckEmails) {
             foreach ($stuckEmails as $stuckEmail) {
@@ -47,8 +46,6 @@ class ReSendPaymentEmailsCommand extends Command
                 ]);
             }
             $this->info("Stuck payment emails resent successfully");
-        } else {
-            Log::info(Carbon::now() . " No stuck payment receipt emails found.");
         }
     }
 }
