@@ -140,7 +140,7 @@ class PaymentCheckoutListener implements ShouldQueue
         ];
         $billingReason = "subscription_create";
         $existingSubscription = CustomerSubscription::where('customer_id', $customerId)
-            ->where(' ', $billingReason)
+            ->where('billing_reason', $billingReason)
             ->first();
         if (!$existingSubscription) {
             Log::info("creating CustomerSubscription");

@@ -19,8 +19,8 @@ class UserResource extends JsonResource
     {
         $graceDays = config('auth.email_verification_grace_period');
         $creationDate = Carbon::parse($this->created_at);
-        $expirationDate = Carbon::parse($this->created_at)->addDays($graceDays);
-        $daysLeft = Carbon::now()->diff($expirationDate)->days;
+        $expirationDate = $creationDate->copy()->addDays($graceDays);
+        $daysLeft = Carbon::now()->diffInDays($expirationDate, false);
         $gracePeriodExpired = Carbon::now()->greaterThan($expirationDate);
 
         return [

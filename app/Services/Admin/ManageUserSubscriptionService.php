@@ -30,7 +30,8 @@ class ManageUserSubscriptionService
         try {
             $customerId = trim($createPaymentRequest['customer_id']);
             $customerEmail = trim($createPaymentRequest['customer_email']);
-            $billingReason = trim($createPaymentRequest['billing_reason']);
+//            $billingReason = trim($createPaymentRequest['billing_reason']);
+            $billingReason = "subscription_create";
 
             DB::beginTransaction();
 

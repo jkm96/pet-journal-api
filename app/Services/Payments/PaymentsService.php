@@ -35,12 +35,12 @@ class PaymentsService
 
         try {
             DB::beginTransaction();
-
+            $billingReason = "subscription_create";
             $existingSubscription = CustomerSubscription::where('customer_id', $customerId)
+                ->where('billing_reason',$billingReason)
                 ->first();
 
             if (!$existingSubscription) {
-                $billingReason = "subscription_create";
                 PaymentHelpers::createCustomerSubscription($customerId,$billingReason, $paymentIntentId, $uniqueInvoice);
             }
 
