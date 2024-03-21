@@ -67,9 +67,15 @@ class JournalEntryService
                 );
             }
 
+            if ($entryRequest['event'] != null) {
+                $event = $entryRequest['event'];
+            }else{
+                $event = '';
+            }
+
             $journalEntry = JournalEntry::create([
                 'title' => $entryRequest['title'],
-                'event' => $entryRequest['event'],
+                'event' => $event ,
                 'content' => $entryRequest['content'],
                 'location' => $entryRequest['location'],
                 'mood' => $entryRequest['mood'],

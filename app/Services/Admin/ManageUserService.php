@@ -103,7 +103,7 @@ class ManageUserService
             );
         } catch (ModelNotFoundException $e) {
             return ModelCrudHelpers::itemNotFoundError($e);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ResponseHelpers::ConvertToJsonResponseWrapper(
                 ['error' => $e->getMessage()],
                 'Error fetching user details',

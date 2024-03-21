@@ -33,9 +33,10 @@ class EditPetTraitRequest extends FormRequest
 
     public function failedValidation(Validator $validator)
     {
+        $errorMessages = implode('. ', $validator->errors()->all());
         throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
             $validator->errors(),
-            "Pet trait update failed due to validation errors",
+            "Validation errors: " . $errorMessages,
             422
         ));
     }

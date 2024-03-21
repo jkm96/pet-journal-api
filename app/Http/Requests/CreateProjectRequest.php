@@ -39,9 +39,10 @@ class CreateProjectRequest extends FormRequest
      */
     public function failedValidation(Validator $validator): mixed
     {
+        $errorMessages = implode('. ', $validator->errors()->all());
         throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
             $validator->errors(),
-            "Project creation failed due to validation errors",
+            "Validation errors: " . $errorMessages,
             422
         ));
     }

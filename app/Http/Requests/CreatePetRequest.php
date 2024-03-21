@@ -38,9 +38,10 @@ class CreatePetRequest extends FormRequest
 
     public function failedValidation(Validator $validator)
     {
+        $errorMessages = implode('. ', $validator->errors()->all());
         throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
             $validator->errors(),
-            "Pet profile creation failed due to validation errors",
+            "Validation errors: " . $errorMessages,
             422
         ));
     }

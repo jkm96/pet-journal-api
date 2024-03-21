@@ -27,7 +27,7 @@ class CreateJournalEntryRequest extends FormRequest
     {
         return [
             'title' => 'required|string|min:8',
-            'event' => 'required|string|min:2',
+            'event' => 'nullable|string|min:2',
             'content' => 'required|string|min:30',
             'location' => 'nullable|string|min:2',
             'mood' => 'nullable|string|min:2',
@@ -42,9 +42,10 @@ class CreateJournalEntryRequest extends FormRequest
      */
     public function failedValidation(Validator $validator): mixed
     {
+        $errorMessages = implode('. ', $validator->errors()->all());
         throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
             $validator->errors(),
-            "Journal entry creation failed due to validation errors",
+            "Validation errors: " . $errorMessages,
             422
         ));
     }

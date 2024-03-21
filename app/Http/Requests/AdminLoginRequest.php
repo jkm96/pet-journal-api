@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Utils\Helpers\ResponseHelpers;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -36,10 +37,11 @@ class AdminLoginRequest extends FormRequest
      */
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json([
-            'success' => false,
-            'message' => 'Validation errors',
-            'data' => $validator->errors()
-        ]));
+        $errorMessages = implode('. ', $validator->errors()->all());
+        throw new HttpResponseException(ResponseHelpers::ConvertToJsonResponseWrapper(
+            $validator->errors(),
+            "Validation errors: " . $errorMessages,
+            422
+        ));
     }
 }
