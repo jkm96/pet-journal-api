@@ -401,7 +401,6 @@ class JournalEntryService
     public function addJournalEntryAttachments($uploadRequest, int $fileCount): JsonResponse
     {
         try {
-            Log::info($uploadRequest);
             $journalId = (int)$uploadRequest['journal_id'];
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
             $journalEntry = $user->journalEntries()->where('id', $journalId)->firstOrFail();

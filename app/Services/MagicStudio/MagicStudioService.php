@@ -69,7 +69,7 @@ class MagicStudioService
                     $project = MagicStudioProject::create([
                         'user_id' => $user->id,
                         'title' => $createRequest['title'],
-                        'pdf_content' => $createRequest['pdf_content'],
+                        'pdf_content' => json_encode($createRequest['pdf_content']),
                         'period_from' => Carbon::parse($periodFrom),
                         'period_to' => Carbon::parse($periodTo),
                     ]);

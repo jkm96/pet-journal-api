@@ -97,7 +97,10 @@ class PetService
     public function getPetProfiles(): JsonResponse
     {
         $user = auth()->user();
-        $petProfiles = $user->pets()->orderBy('created_at', 'desc')->get();
+        $petProfiles = $user->pets()
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return ResponseHelpers::ConvertToJsonResponseWrapper(
             PetProfileResource::collection($petProfiles),
             "Fetched pets successfully",
@@ -113,7 +116,9 @@ class PetService
     {
         try {
             $user = User::findOrFail(auth()->user()->getAuthIdentifier());
-            $petProfile = $user->pets()->where('slug', $petSlug)->firstOrFail();
+            $petProfile = $user->pets()
+                ->where('slug', $petSlug)
+                ->firstOrFail();
             $petTraits = $petProfile->petTraits;
 
             return ResponseHelpers::ConvertToJsonResponseWrapper(
@@ -151,7 +156,9 @@ class PetService
                 );
             }
 
-            $checkPet = $user->pets()->where('name', $request['name'])->first();
+            $checkPet = $user->pets()
+                ->where('name', $request['name'])
+                ->first();
             if (!$checkPet) {
                 $pet->name = $request['name'];
             }
@@ -245,7 +252,9 @@ class PetService
     {
         try {
             $user = auth()->user();
-            $pet = $user->pets()->findOrFail($petId);
+            $pet = $user
+                ->pets()
+                ->findOrFail($petId);
             if ($user->getAuthIdentifier() !== $pet->user_id) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     [],
@@ -293,7 +302,9 @@ class PetService
                     403);
             }
 
-            $existingTrait = $pet->petTraits()->where('trait', $traitRequest['trait'])->first();
+            $existingTrait = $pet->petTraits()
+                ->where('trait', $traitRequest['trait'])
+                ->first();
             if ($existingTrait) {
                 return ResponseHelpers::ConvertToJsonResponseWrapper(
                     $petTrait->trait,
