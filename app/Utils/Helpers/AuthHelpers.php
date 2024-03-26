@@ -29,7 +29,7 @@ class AuthHelpers
 
             return [
                 "token" => new TokenResource($tokenDetails),
-                "user" => new UserResource($apiUser)
+                "user" => new AdminResource($apiUser)
             ];
         }
 
@@ -58,7 +58,10 @@ class AuthHelpers
         $nameToWrite = $isProfilePicture ? $initials : $name;
 
         // Define a background color and text color for the avatar
-        $bgColor = '#' . str_pad(substr(md5($name), 0, 6), 6, '0'); // Use a unique color based on the name
+        $colors = ['#005BC4','#0E8AAA','#17C964','#338EF7','#004493'];
+        $randomIndex = array_rand($colors);
+        $randomColor = $colors[$randomIndex];
+        $bgColor = $randomColor; //. str_pad(substr(md5($name), 0, 6), 6, '0'); // Use a unique color based on the name
         $textColor = '#ffffff';
 
         // Determine image dimensions based on whether it's a profile picture or not
