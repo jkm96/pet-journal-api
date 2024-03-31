@@ -42,10 +42,16 @@ class PaymentsService
                 ->where('billing_reason',$billingReason)
                 ->first();
 
-            if (!$existingSubscription) {
+            if ($existingSubscription) {
+                Log::info("Customer subscription exists");
+            } else {
+                Log::info("Customer subscription does not exist");
                 PaymentHelpers::createCustomerSubscription($customerId,$billingReason, $paymentIntentId, $uniqueInvoice);
-            }
+                $existingSubscription = CustomerSubscription::where('customer_id', $customerId)
+                    ->where('billing_reason',$billingReason)
+                    ->first();
 
+            }
             $existingSubscription->invoice = $uniqueInvoice;
             $existingSubscription->save();
 
