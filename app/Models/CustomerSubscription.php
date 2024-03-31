@@ -14,6 +14,7 @@ class CustomerSubscription extends Model
         'payment_intent_id',
         'subscription_plan_id',
         'invoice',
+        'billing_reason',
         'start_date',
         'end_date',
         'period_start',

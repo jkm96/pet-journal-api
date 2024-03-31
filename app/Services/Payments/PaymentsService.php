@@ -50,7 +50,6 @@ class PaymentsService
                 $existingSubscription = CustomerSubscription::where('customer_id', $customerId)
                     ->where('billing_reason',$billingReason)
                     ->first();
-
             }
             $existingSubscription->invoice = $uniqueInvoice;
             $existingSubscription->save();
