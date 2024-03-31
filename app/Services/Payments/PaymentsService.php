@@ -29,7 +29,9 @@ class PaymentsService
     {
         Log::info($createPaymentRequest);
         $user = auth()->user();
+        Log::info($user);
         $uniqueInvoice = PaymentHelpers::generateUniqueInvoice($user->username);
+        Log::info($uniqueInvoice);
         $customerId = $createPaymentRequest['customer'];
         $paymentIntentId = $createPaymentRequest['payment_intent'];
 
