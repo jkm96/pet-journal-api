@@ -133,11 +133,6 @@ class PaymentCheckoutListener implements ShouldQueue
      */
     public function processCustomerSubscription(mixed $stripePayment, string $customerId): void
     {
-        $subscriptionData = [
-            'payment_intent_id' => $stripePayment->payment_intent,
-            'period_start' => $stripePayment->period_start,
-            'period_end' => $stripePayment->period_end,
-        ];
         $billingReason = "subscription_create";
         $existingSubscription = CustomerSubscription::where('customer_id', $customerId)
             ->where('billing_reason', $billingReason)
@@ -146,7 +141,10 @@ class PaymentCheckoutListener implements ShouldQueue
             Log::info("creating CustomerSubscription");
             PaymentHelpers::createCustomerSubscription($customerId, $billingReason,"$-paymentIntentId", "$-uniqueInvoice");
         } else {
-            $existingSubscription->update($subscriptionData);
+            $existingSubscription->payment_intent_id = $stripePayment->payment_intent;
+            $existingSubscription->period_start = $stripePayment->period_start;
+            $existingSubscription->period_end = $stripePayment->period_end;
+            $existingSubscription->update();
         }
     }
 
