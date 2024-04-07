@@ -90,7 +90,7 @@
         <a href="{{ $verificationUrl }}" class="verify-button">Verify</a>
     </p>
 
-    <p>If you have any questions or need assistance, feel free to reach out. Our team is here to help!</p>
+    <p>If you have any questions or need assistance, feel free to reach out via {{ env('PET_DIARIES_SUPPORT_EMAIL') }}. Our team is here to help!</p>
     <p>Wishing you and your pets wonderful moments on Pet Diaries!</p>
 
     @include('mail.slogan')

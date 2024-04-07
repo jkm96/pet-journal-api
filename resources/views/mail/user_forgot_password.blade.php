@@ -89,7 +89,7 @@
         <a href="{{ $resetPassUrl }}" class="verify-button">Reset Password</a>
     </p>
 
-    <p>If you have any questions or need assistance, feel free to reach out. Our team is here to help!</p>
+    <p>If you have any questions or need assistance, feel free to reach out via {{ env('PET_DIARIES_SUPPORT_EMAIL') }}. Our team is here to help!</p>
 
     @include('mail.slogan')
 

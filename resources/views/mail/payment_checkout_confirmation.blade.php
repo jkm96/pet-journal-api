@@ -72,7 +72,7 @@
     <p>Your invoice is: <span style="font-weight: bolder">{{ $invoice }}</span></p>
     <p>Explore Pet Diaries to create and share delightful moments with your furry friends.
         If you have any questions or need assistance, our support team is here to help. Simply
-        contact us at <a href="mailto:support@petdiaries.com">support@petdiaries.com</a>.</p>
+        contact us at <a href="mailto:{{ env('PET_DIARIES_SUPPORT_EMAIL') }}">{{ env('PET_DIARIES_SUPPORT_EMAIL') }}</a>.</p>
     <p>Wishing you and your pets wonderful moments on Pet Diaries!</p>
 
     @include('mail.slogan')
